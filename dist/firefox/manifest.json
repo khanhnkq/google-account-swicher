@@ -1,0 +1,68 @@
+{
+  "manifest_version": 3,
+  "name": "Fast Google Account Switcher",
+  "version": "1.0.0",
+  "description": "Instantly switch Google accounts (/u/0, /u/1, etc.) using custom keyboard shortcuts.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "fast-google-account-switcher@khanhnkq.local",
+      "strict_min_version": "109.0"
+    }
+  },
+  "permissions": [
+    "tabs"
+  ],
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "action": {
+    "default_title": "Google Account Switcher",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png",
+      "96": "icons/icon-96.png",
+      "128": "icons/icon-128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "96": "icons/icon-96.png",
+    "128": "icons/icon-128.png"
+  },
+  "commands": {
+    "switch-to-0": {
+      "suggested_key": {
+        "default": "Alt+Shift+1",
+        "mac": "Alt+Shift+1"
+      },
+      "description": "Switch to Google Account 0 (/u/0)"
+    },
+    "switch-to-1": {
+      "suggested_key": {
+        "default": "Alt+Shift+2",
+        "mac": "Alt+Shift+2"
+      },
+      "description": "Switch to Google Account 1 (/u/1)"
+    },
+    "switch-to-2": {
+      "suggested_key": {
+        "default": "Alt+Shift+3",
+        "mac": "Alt+Shift+3"
+      },
+      "description": "Switch to Google Account 2 (/u/2)"
+    },
+    "switch-to-3": {
+      "suggested_key": {
+        "default": "Alt+Shift+4",
+        "mac": "Alt+Shift+4"
+      },
+      "description": "Switch to Google Account 3 (/u/3)"
+    }
+  }
+}
