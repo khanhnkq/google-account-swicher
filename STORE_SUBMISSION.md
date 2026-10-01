@@ -38,7 +38,7 @@ Tài liệu này chuẩn bị sẵn toàn bộ nội dung cần điền khi nộ
 
 ## 🌐 2. Nộp lên Chrome Web Store
 * **Trang nộp:** [https://chrome.google.com/webstore/devconsole/](https://chrome.google.com/webstore/devconsole/)
-* **File nộp:** `dist/google-account-switcher-chrome-v1.3.2.zip`
+* **File nộp:** `dist/google-account-switcher-chrome-v1.3.3.zip`
 
 ### Thông tin điền vào biểu mẫu Chrome:
 * **Item Name:** `Fast Google Account Switcher`
