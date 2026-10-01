@@ -11,7 +11,7 @@
     "message": "Tài khoản Google"
   },
   "defaultUser": {
-    "message": "Người dùng 0 (Mặc định)"
+    "message": "Người dùng 1 (Mặc định)"
   },
   "userLabel": {
     "message": "Người dùng $INDEX$",
@@ -57,7 +57,6 @@
     "message": "Bấm vào ô phím tắt để gán bất kỳ phím nào"
   },
   "shortcutCmdCycle": { "message": "Chuyển sang tài khoản tiếp theo" },
-  "shortcutCmd0": { "message": "Chuyển sang Người dùng 0" },
   "shortcutCmd1": { "message": "Chuyển sang Người dùng 1" },
   "shortcutCmd2": { "message": "Chuyển sang Người dùng 2" },
   "shortcutCmd3": { "message": "Chuyển sang Người dùng 3" },
@@ -65,5 +64,6 @@
   "shortcutCmd5": { "message": "Chuyển sang Người dùng 5" },
   "shortcutCmd6": { "message": "Chuyển sang Người dùng 6" },
   "shortcutCmd7": { "message": "Chuyển sang Người dùng 7" },
-  "shortcutCmd8": { "message": "Chuyển sang Người dùng 8" }
+  "shortcutCmd8": { "message": "Chuyển sang Người dùng 8" },
+  "shortcutCmd9": { "message": "Chuyển sang Người dùng 9" }
 }

@@ -11,13 +11,12 @@ let activeShortcuts = {};
 
 function rebuildShortcuts() {
   const result = {};
-  for (let i = 0; i < accountCount; i++) {
-    if (i < 9) {
-      result[i.toString()] = `Alt+Shift+${i + 1}`;
+  for (let userNum = 1; userNum <= accountCount; userNum++) {
+    if (userNum <= 9) {
+      result[userNum.toString()] = `Alt+Shift+${userNum}`;
     }
   }
 
-  // Phím tắt xoay vòng (cycle) mặc định là Alt+Shift+S
   result["cycle"] = "Alt+Shift+S";
 
   if (customShortcuts) {
@@ -120,7 +119,7 @@ window.addEventListener(
     const combo = getEventKeyCombo(e);
     if (!combo) return;
 
-    // 1. Kiểm tra phím tắt xoay vòng (cycle)
+    // 1. Phím tắt xoay vòng (cycle)
     if (activeShortcuts["cycle"] && activeShortcuts["cycle"].toLowerCase() === combo.toLowerCase()) {
       e.preventDefault();
       e.stopPropagation();
@@ -128,14 +127,16 @@ window.addEventListener(
       return;
     }
 
-    // 2. Kiểm tra phím tắt theo số thứ tự tài khoản
-    for (const [accIndex, shortcut] of Object.entries(activeShortcuts)) {
-      if (accIndex !== "cycle" && shortcut && shortcut.toLowerCase() === combo.toLowerCase()) {
+    // 2. Phím tắt chuyển theo số người dùng (userNum: 1, 2, ..., N)
+    for (const [key, shortcut] of Object.entries(activeShortcuts)) {
+      if (key !== "cycle" && shortcut && shortcut.toLowerCase() === combo.toLowerCase()) {
         e.preventDefault();
         e.stopPropagation();
+        const userNum = parseInt(key, 10);
+        const googleIndex = userNum - 1; // userNum 1 -> googleIndex 0
         extApi.runtime.sendMessage({
           action: "switch",
-          index: parseInt(accIndex, 10)
+          index: googleIndex
         });
         break;
       }

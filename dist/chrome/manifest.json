@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "default_locale": "en",
   "name": "__MSG_extensionName__",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "__MSG_extensionDescription__",
   "permissions": [
     "tabs",
@@ -49,29 +49,26 @@
       },
       "description": "__MSG_shortcutCmdCycle__"
     },
-    "switch-to-0": {
-      "description": "__MSG_shortcutCmd0__",
+    "switch-to-1": {
+      "description": "__MSG_shortcutCmd1__",
       "suggested_key": {
         "default": "Alt+Shift+1",
         "mac": "Alt+Shift+1"
       }
     },
-    "switch-to-1": {
-      "description": "__MSG_shortcutCmd1__",
+    "switch-to-2": {
+      "description": "__MSG_shortcutCmd2__",
       "suggested_key": {
         "default": "Alt+Shift+2",
         "mac": "Alt+Shift+2"
       }
     },
-    "switch-to-2": {
-      "description": "__MSG_shortcutCmd2__",
+    "switch-to-3": {
+      "description": "__MSG_shortcutCmd3__",
       "suggested_key": {
         "default": "Alt+Shift+3",
         "mac": "Alt+Shift+3"
       }
-    },
-    "switch-to-3": {
-      "description": "__MSG_shortcutCmd3__"
     },
     "switch-to-4": {
       "description": "__MSG_shortcutCmd4__"
@@ -87,6 +84,9 @@
     },
     "switch-to-8": {
       "description": "__MSG_shortcutCmd8__"
+    },
+    "switch-to-9": {
+      "description": "__MSG_shortcutCmd9__"
     }
   }
 }

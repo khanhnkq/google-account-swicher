@@ -13,7 +13,7 @@ function isGoogleDomain(hostname) {
   );
 }
 
-function getTargetGoogleUrl(rawUrl, targetIndex) {
+function getTargetGoogleUrl(rawUrl, targetGoogleIndex) {
   try {
     const url = new URL(rawUrl);
 
@@ -24,27 +24,27 @@ function getTargetGoogleUrl(rawUrl, targetIndex) {
     // 1. URL có path /u/0/, /u/1/...
     const uRegex = /\/u\/\d+(\/|$)/;
     if (uRegex.test(url.pathname)) {
-      url.pathname = url.pathname.replace(uRegex, `/u/${targetIndex}$1`);
+      url.pathname = url.pathname.replace(uRegex, `/u/${targetGoogleIndex}$1`);
       return url.toString();
     }
 
     // 2. Query param authuser
     if (url.searchParams.has("authuser")) {
-      url.searchParams.set("authuser", targetIndex.toString());
+      url.searchParams.set("authuser", targetGoogleIndex.toString());
       return url.toString();
     }
 
     // 3. Các dịch vụ chưa có /u/ trong path
     if (url.hostname === "mail.google.com") {
-      url.pathname = url.pathname.replace(/^\/mail(\/|$)/, `/mail/u/${targetIndex}/`);
+      url.pathname = url.pathname.replace(/^\/mail(\/|$)/, `/mail/u/${targetGoogleIndex}/`);
       return url.toString();
     }
     if (url.hostname === "drive.google.com") {
-      url.pathname = url.pathname.replace(/^\/drive(\/|$)/, `/drive/u/${targetIndex}/`);
+      url.pathname = url.pathname.replace(/^\/drive(\/|$)/, `/drive/u/${targetGoogleIndex}/`);
       return url.toString();
     }
     if (url.hostname === "calendar.google.com") {
-      url.pathname = url.pathname.replace(/^\/calendar(\/|$)/, `/calendar/u/${targetIndex}/`);
+      url.pathname = url.pathname.replace(/^\/calendar(\/|$)/, `/calendar/u/${targetGoogleIndex}/`);
       return url.toString();
     }
     if (url.hostname === "docs.google.com") {
@@ -52,17 +52,17 @@ function getTargetGoogleUrl(rawUrl, targetIndex) {
       if (match) {
         const product = match[1];
         const remaining = match[3] || "";
-        url.pathname = `/${product}/u/${targetIndex}/${remaining}`;
+        url.pathname = `/${product}/u/${targetGoogleIndex}/${remaining}`;
         return url.toString();
       }
     }
     if (url.hostname === "keep.google.com") {
-      url.pathname = `/u/${targetIndex}${url.pathname}`;
+      url.pathname = `/u/${targetGoogleIndex}${url.pathname}`;
       return url.toString();
     }
 
     // 4. Fallback gán query param authuser
-    url.searchParams.set("authuser", targetIndex.toString());
+    url.searchParams.set("authuser", targetGoogleIndex.toString());
     return url.toString();
   } catch (err) {
     console.error("[Account Switcher] URL parse error:", err);
@@ -70,13 +70,13 @@ function getTargetGoogleUrl(rawUrl, targetIndex) {
   }
 }
 
-async function switchActiveTabAccount(targetIndex) {
+async function switchActiveTabAccount(targetGoogleIndex) {
   try {
     const tabs = await extApi.tabs.query({ active: true, currentWindow: true });
     if (!tabs || tabs.length === 0 || !tabs[0].url) return;
 
     const activeTab = tabs[0];
-    const newUrl = getTargetGoogleUrl(activeTab.url, targetIndex);
+    const newUrl = getTargetGoogleUrl(activeTab.url, targetGoogleIndex);
     if (newUrl && newUrl !== activeTab.url) {
       await extApi.tabs.update(activeTab.id, { url: newUrl });
     }
@@ -85,9 +85,6 @@ async function switchActiveTabAccount(targetIndex) {
   }
 }
 
-/**
- * Xoay vòng tài khoản (Cycle between accounts: 0 -> 1 -> 2 -> ... -> 0)
- */
 async function cycleAccount(step = 1) {
   try {
     const tabs = await extApi.tabs.query({ active: true, currentWindow: true });
@@ -98,7 +95,6 @@ async function cycleAccount(step = 1) {
     const parsed = new URL(currentUrl);
     if (!isGoogleDomain(parsed.hostname)) return;
 
-    // Lấy số lượng tài khoản đã cấu hình (mặc định 4)
     let count = 4;
     if (extApi.storage && extApi.storage.local) {
       const data = await extApi.storage.local.get("accountCount");
@@ -107,17 +103,16 @@ async function cycleAccount(step = 1) {
       }
     }
 
-    // Xác định index hiện tại
-    let currentIndex = 0;
+    let currentGoogleIndex = 0;
     const uMatch = parsed.pathname.match(/\/u\/(\d+)(\/|$)/);
     if (uMatch) {
-      currentIndex = parseInt(uMatch[1], 10);
+      currentGoogleIndex = parseInt(uMatch[1], 10);
     } else if (parsed.searchParams.has("authuser")) {
-      currentIndex = parseInt(parsed.searchParams.get("authuser"), 10) || 0;
+      currentGoogleIndex = parseInt(parsed.searchParams.get("authuser"), 10) || 0;
     }
 
-    const nextIndex = (currentIndex + step + count) % count;
-    const newUrl = getTargetGoogleUrl(currentUrl, nextIndex);
+    const nextGoogleIndex = (currentGoogleIndex + step + count) % count;
+    const newUrl = getTargetGoogleUrl(currentUrl, nextGoogleIndex);
     if (newUrl && newUrl !== currentUrl) {
       await extApi.tabs.update(activeTab.id, { url: newUrl });
     }
@@ -134,14 +129,16 @@ extApi.commands.onCommand.addListener((command) => {
   }
   const match = command.match(/^switch-to-(\d+)$/);
   if (match) {
-    const idx = parseInt(match[1], 10);
-    switchActiveTabAccount(idx);
+    const userNum = parseInt(match[1], 10); // 1..9
+    const googleIndex = userNum - 1; // 0..8
+    switchActiveTabAccount(googleIndex);
   }
 });
 
 // Bắt message từ popup UI hoặc content script
 extApi.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "switch") {
+    // message.index là googleIndex (0-based)
     switchActiveTabAccount(message.index).then(() => {
       sendResponse({ status: "ok" });
     });

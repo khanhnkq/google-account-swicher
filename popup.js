@@ -5,8 +5,8 @@ const DEFAULT_CYCLE_SHORTCUT = "Alt+Shift+S";
 
 let accountCount = DEFAULT_COUNT;
 let customShortcuts = {};
-let recordingIndex = null;
-let currentDetectedIndex = null;
+let recordingKey = null;
+let currentDetectedGoogleIndex = null;
 
 function t(key, substitutions) {
   if (extApi.i18n && extApi.i18n.getMessage) {
@@ -30,7 +30,7 @@ function applyStaticLocalization() {
   });
 }
 
-function detectAccountIndex(urlStr) {
+function detectGoogleAccountIndex(urlStr) {
   try {
     const url = new URL(urlStr);
     const uMatch = url.pathname.match(/\/u\/(\d+)(\/|$)/);
@@ -43,19 +43,19 @@ function detectAccountIndex(urlStr) {
   return null;
 }
 
-function getDefaultShortcut(index) {
-  if (index < 9) {
-    return `Alt+Shift+${index + 1}`;
+function getDefaultShortcutForUserNum(userNum) {
+  if (userNum <= 9) {
+    return `Alt+Shift+${userNum}`;
   }
   return "";
 }
 
-function getShortcutForIndex(index) {
-  const key = index.toString();
+function getShortcutForUserNum(userNum) {
+  const key = userNum.toString();
   if (customShortcuts[key] !== undefined) {
     return customShortcuts[key];
   }
-  return getDefaultShortcut(index);
+  return getDefaultShortcutForUserNum(userNum);
 }
 
 function getCycleShortcut() {
@@ -65,11 +65,11 @@ function getCycleShortcut() {
   return DEFAULT_CYCLE_SHORTCUT;
 }
 
-async function triggerSwitch(targetIndex) {
+async function triggerSwitch(googleIndex) {
   try {
     await extApi.runtime.sendMessage({
       action: "switch",
-      index: targetIndex
+      index: googleIndex
     });
     window.close();
   } catch (err) {
@@ -101,51 +101,53 @@ function renderAccountGrid() {
   if (!grid) return;
   grid.innerHTML = "";
 
-  const defaultUserLabel = t("defaultUser") || "Người dùng 0 (Mặc định)";
+  const defaultUserLabel = t("defaultUser") || "Người dùng 1 (Mặc định)";
 
   for (let i = 0; i < accountCount; i++) {
+    const userNum = i + 1; // 1, 2, ..., accountCount
+    const googleIndex = i; // 0, 1, ..., accountCount - 1
+
     const row = document.createElement("div");
     row.className = "account-row";
-    row.dataset.index = i.toString();
+    row.dataset.userNum = userNum.toString();
 
-    if (currentDetectedIndex === i) {
+    if (currentDetectedGoogleIndex === googleIndex) {
       row.classList.add("current");
     }
 
-    // Account Button
+    // Nút bấm chuyển tài khoản
     const accBtn = document.createElement("button");
     accBtn.type = "button";
     accBtn.className = "account-btn";
-    accBtn.dataset.index = i.toString();
 
     const avatar = document.createElement("span");
     avatar.className = "avatar";
-    avatar.textContent = i.toString();
+    avatar.textContent = userNum.toString();
 
     const label = document.createElement("span");
     label.className = "label";
-    label.textContent = i === 0 ? defaultUserLabel : (t("userLabel", [i.toString()]) || `Người dùng ${i}`);
+    label.textContent = userNum === 1 ? defaultUserLabel : (t("userLabel", [userNum.toString()]) || `Người dùng ${userNum}`);
 
     accBtn.appendChild(avatar);
     accBtn.appendChild(label);
-    accBtn.addEventListener("click", () => triggerSwitch(i));
+    accBtn.addEventListener("click", () => triggerSwitch(googleIndex));
 
-    // Shortcut Badge Button
+    // Nút đổi phím tắt
     const badgeBtn = document.createElement("button");
     badgeBtn.type = "button";
     badgeBtn.className = "key-badge-btn";
-    badgeBtn.dataset.keyIndex = i.toString();
+    badgeBtn.dataset.keyTarget = userNum.toString();
     badgeBtn.title = t("clickToChange") || "Bấm để đổi phím tắt";
 
     const kbd = document.createElement("kbd");
     kbd.className = "key-badge";
-    const sc = getShortcutForIndex(i);
+    const sc = getShortcutForUserNum(userNum);
     kbd.textContent = sc || "---";
 
     badgeBtn.appendChild(kbd);
     badgeBtn.addEventListener("click", (e) => {
       e.stopPropagation();
-      startRecording(badgeBtn, i.toString());
+      startRecording(badgeBtn, userNum.toString());
     });
 
     row.appendChild(accBtn);
@@ -194,12 +196,12 @@ function getPressedKeyCombo(e) {
   return parts.join("+");
 }
 
-function startRecording(btn, indexStr) {
-  if (recordingIndex !== null) {
+function startRecording(btn, targetKey) {
+  if (recordingKey !== null) {
     stopRecording();
   }
 
-  recordingIndex = indexStr;
+  recordingKey = targetKey;
   btn.classList.add("recording");
   const badge = btn.querySelector(".key-badge");
   badge.textContent = t("recordingKey") || "Nhấn phím...";
@@ -215,7 +217,7 @@ function startRecording(btn, indexStr) {
 
     const combo = getPressedKeyCombo(e);
     if (combo) {
-      customShortcuts[indexStr] = combo;
+      customShortcuts[targetKey] = combo;
       if (extApi.storage && extApi.storage.local) {
         extApi.storage.local.set({ customShortcuts });
       }
@@ -226,12 +228,12 @@ function startRecording(btn, indexStr) {
   function stopRecording() {
     window.removeEventListener("keydown", onKeyDown, true);
     btn.classList.remove("recording");
-    if (indexStr === "cycle") {
+    if (targetKey === "cycle") {
       updateCycleBadge();
     } else {
       renderAccountGrid();
     }
-    recordingIndex = null;
+    recordingKey = null;
   }
 
   window.addEventListener("keydown", onKeyDown, true);
@@ -285,20 +287,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     const tabs = await extApi.tabs.query({ active: true, currentWindow: true });
     if (tabs && tabs[0] && tabs[0].url) {
       const activeUrl = tabs[0].url;
-      const detected = detectAccountIndex(activeUrl);
+      const detectedGoogleIdx = detectGoogleAccountIndex(activeUrl);
 
-      if (detected !== null) {
-        currentDetectedIndex = detected;
-        const activeText = t("currentUser", [detected.toString()]) || `Đang dùng: Người dùng ${detected}`;
+      if (detectedGoogleIdx !== null) {
+        currentDetectedGoogleIndex = detectedGoogleIdx;
+        const userNum = detectedGoogleIdx + 1;
+        const activeText = t("currentUser", [userNum.toString()]) || `Đang dùng: Người dùng ${userNum}`;
         badge.textContent = activeText;
         badge.classList.add("active");
 
-        if (detected >= accountCount) {
-          setAccountCount(detected + 1);
+        if (userNum > accountCount) {
+          setAccountCount(userNum);
         }
       } else {
         const isGoogle = activeUrl.includes("google.com") || activeUrl.includes("youtube.com");
-        badge.textContent = isGoogle ? (t("defaultUser") || "Người dùng 0") : (t("notGoogle") || "Không phải Google");
+        badge.textContent = isGoogle ? (t("defaultUser") || "Người dùng 1") : (t("notGoogle") || "Không phải Google");
       }
     }
   } catch (err) {
@@ -308,7 +311,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // 2. Render danh sách tài khoản
   renderAccountGrid();
 
-  // 3. Tương tác Nút Cycle (Xoay vòng tài khoản)
+  // 3. Tương tác Nút Cycle
   if (cycleActionBtn) {
     cycleActionBtn.addEventListener("click", triggerCycle);
   }
