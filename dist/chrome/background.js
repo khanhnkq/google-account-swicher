@@ -4,6 +4,8 @@
 
 const extApi = typeof browser !== "undefined" ? browser : chrome;
 
+let lastCycleTime = 0;
+
 function isGoogleDomain(hostname) {
   return (
     hostname === "google.com" ||
@@ -21,13 +23,14 @@ function getTargetGoogleUrl(rawUrl, targetGoogleIndex) {
       return null;
     }
 
-    // Bảo đảm index không bao giờ âm
     const safeIndex = Math.max(0, parseInt(targetGoogleIndex, 10) || 0);
 
     // 1. URL có path /u/0/, /u/1/...
     const uRegex = /\/u\/\d+(\/|$)/;
     if (uRegex.test(url.pathname)) {
       url.pathname = url.pathname.replace(uRegex, `/u/${safeIndex}$1`);
+      // Xóa sạch authuser để tránh việc Google ưu tiên query param và đá về tài khoản cũ
+      url.searchParams.delete("authuser");
       return url.toString();
     }
 
@@ -40,14 +43,17 @@ function getTargetGoogleUrl(rawUrl, targetGoogleIndex) {
     // 3. Các dịch vụ chưa có /u/ trong path
     if (url.hostname === "mail.google.com") {
       url.pathname = url.pathname.replace(/^\/mail(\/|$)/, `/mail/u/${safeIndex}/`);
+      url.searchParams.delete("authuser");
       return url.toString();
     }
     if (url.hostname === "drive.google.com") {
       url.pathname = url.pathname.replace(/^\/drive(\/|$)/, `/drive/u/${safeIndex}/`);
+      url.searchParams.delete("authuser");
       return url.toString();
     }
     if (url.hostname === "calendar.google.com") {
       url.pathname = url.pathname.replace(/^\/calendar(\/|$)/, `/calendar/u/${safeIndex}/`);
+      url.searchParams.delete("authuser");
       return url.toString();
     }
     if (url.hostname === "docs.google.com") {
@@ -56,11 +62,13 @@ function getTargetGoogleUrl(rawUrl, targetGoogleIndex) {
         const product = match[1];
         const remaining = match[3] || "";
         url.pathname = `/${product}/u/${safeIndex}/${remaining}`;
+        url.searchParams.delete("authuser");
         return url.toString();
       }
     }
     if (url.hostname === "keep.google.com") {
       url.pathname = `/u/${safeIndex}${url.pathname}`;
+      url.searchParams.delete("authuser");
       return url.toString();
     }
 
@@ -90,6 +98,13 @@ async function switchActiveTabAccount(targetGoogleIndex) {
 }
 
 async function cycleAccount(step = 1) {
+  const now = Date.now();
+  // Chống kích hoạt kép (debounce 350ms) nếu cả commands và content script cùng bắn
+  if (now - lastCycleTime < 350) {
+    return;
+  }
+  lastCycleTime = now;
+
   try {
     const tabs = await extApi.tabs.query({ active: true, currentWindow: true });
     if (!tabs || tabs.length === 0 || !tabs[0].url) return;
@@ -132,7 +147,6 @@ extApi.commands.onCommand.addListener((command) => {
     return;
   }
 
-  // Hỗ trợ switch-to-0..8 (0 là Người dùng 1, 1 là Người dùng 2, ..., 4 là Người dùng 5)
   const toMatch = command.match(/^switch-to-(\d+)$/);
   if (toMatch) {
     const idx = parseInt(toMatch[1], 10);
@@ -140,7 +154,6 @@ extApi.commands.onCommand.addListener((command) => {
     return;
   }
 
-  // Hỗ trợ switch-user-1..9
   const userMatch = command.match(/^switch-user-(\d+)$/);
   if (userMatch) {
     const userNum = parseInt(userMatch[1], 10);

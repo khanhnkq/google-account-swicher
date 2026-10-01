@@ -45,8 +45,6 @@ function detectGoogleAccountIndex(urlStr) {
 
 function getDefaultShortcutForIndex(googleIndex) {
   if (googleIndex < 9) {
-    // googleIndex 0 (Người dùng 1) -> Alt+Shift+1
-    // googleIndex 2 (Người dùng 3) -> Alt+Shift+3
     return `Alt+Shift+${googleIndex + 1}`;
   }
   return "";
@@ -79,13 +77,39 @@ async function triggerSwitch(googleIndex) {
   }
 }
 
+/**
+ * Xoay vòng tài khoản: Giữ popup mở để người dùng có thể bấm liên tục nhiều lần!
+ */
 async function triggerCycle() {
   try {
-    await extApi.runtime.sendMessage({
-      action: "cycle",
-      step: 1
+    const nextGoogleIndex = (currentDetectedGoogleIndex !== null)
+      ? (currentDetectedGoogleIndex + 1) % accountCount
+      : 0;
+
+    currentDetectedGoogleIndex = nextGoogleIndex;
+    const userNum = nextGoogleIndex + 1;
+
+    // Cập nhật trạng thái ngay lập tức trên UI popup
+    const badge = document.getElementById("current-badge");
+    if (badge) {
+      badge.textContent = t("currentUser", [userNum.toString()]) || `Đang dùng: Người dùng ${userNum}`;
+      badge.classList.add("active");
+    }
+
+    // Đổi highlight hàng đang chọn
+    document.querySelectorAll(".account-row").forEach((row) => {
+      if (row.dataset.index === nextGoogleIndex.toString()) {
+        row.classList.add("current");
+      } else {
+        row.classList.remove("current");
+      }
     });
-    window.close();
+
+    // Gửi lệnh chuyển tab ngầm (không đóng popup)
+    await extApi.runtime.sendMessage({
+      action: "switch",
+      index: nextGoogleIndex
+    });
   } catch (err) {
     console.error("[Popup] Cycle error:", err);
   }
@@ -250,7 +274,6 @@ function cleanLegacyShortcuts(shortcuts) {
       continue;
     }
     const num = parseInt(k, 10);
-    // Bỏ qua các key âm như "-1"
     if (!isNaN(num) && num >= 0 && num < 20) {
       cleaned[num.toString()] = v;
     }
@@ -266,7 +289,6 @@ async function loadData() {
     }
     if (data.customShortcuts) {
       customShortcuts = cleanLegacyShortcuts(data.customShortcuts);
-      // Lưu lại bản sạch nếu trước đó có key rác
       extApi.storage.local.set({ customShortcuts });
     }
   }
@@ -332,7 +354,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // 2. Render danh sách tài khoản
   renderAccountGrid();
 
-  // 3. Tương tác Nút Cycle
+  // 3. Tương tác Nút Cycle (Bấm liên tục không bị đóng popup)
   if (cycleActionBtn) {
     cycleActionBtn.addEventListener("click", triggerCycle);
   }
