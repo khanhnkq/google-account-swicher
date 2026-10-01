@@ -43,19 +43,21 @@ function detectGoogleAccountIndex(urlStr) {
   return null;
 }
 
-function getDefaultShortcutForUserNum(userNum) {
-  if (userNum <= 9) {
-    return `Alt+Shift+${userNum}`;
+function getDefaultShortcutForIndex(googleIndex) {
+  if (googleIndex < 9) {
+    // googleIndex 0 (Người dùng 1) -> Alt+Shift+1
+    // googleIndex 2 (Người dùng 3) -> Alt+Shift+3
+    return `Alt+Shift+${googleIndex + 1}`;
   }
   return "";
 }
 
-function getShortcutForUserNum(userNum) {
-  const key = userNum.toString();
+function getShortcutForIndex(googleIndex) {
+  const key = googleIndex.toString();
   if (customShortcuts[key] !== undefined) {
     return customShortcuts[key];
   }
-  return getDefaultShortcutForUserNum(userNum);
+  return getDefaultShortcutForIndex(googleIndex);
 }
 
 function getCycleShortcut() {
@@ -104,12 +106,12 @@ function renderAccountGrid() {
   const defaultUserLabel = t("defaultUser") || "Người dùng 1 (Mặc định)";
 
   for (let i = 0; i < accountCount; i++) {
-    const userNum = i + 1; // 1, 2, ..., accountCount
-    const googleIndex = i; // 0, 1, ..., accountCount - 1
+    const googleIndex = i; // 0, 1, 2, ..., N-1
+    const userNum = i + 1; // 1, 2, 3, ..., N
 
     const row = document.createElement("div");
     row.className = "account-row";
-    row.dataset.userNum = userNum.toString();
+    row.dataset.index = googleIndex.toString();
 
     if (currentDetectedGoogleIndex === googleIndex) {
       row.classList.add("current");
@@ -136,18 +138,18 @@ function renderAccountGrid() {
     const badgeBtn = document.createElement("button");
     badgeBtn.type = "button";
     badgeBtn.className = "key-badge-btn";
-    badgeBtn.dataset.keyTarget = userNum.toString();
+    badgeBtn.dataset.keyTarget = googleIndex.toString();
     badgeBtn.title = t("clickToChange") || "Bấm để đổi phím tắt";
 
     const kbd = document.createElement("kbd");
     kbd.className = "key-badge";
-    const sc = getShortcutForUserNum(userNum);
+    const sc = getShortcutForIndex(googleIndex);
     kbd.textContent = sc || "---";
 
     badgeBtn.appendChild(kbd);
     badgeBtn.addEventListener("click", (e) => {
       e.stopPropagation();
-      startRecording(badgeBtn, userNum.toString());
+      startRecording(badgeBtn, googleIndex.toString());
     });
 
     row.appendChild(accBtn);
@@ -239,6 +241,23 @@ function startRecording(btn, targetKey) {
   window.addEventListener("keydown", onKeyDown, true);
 }
 
+function cleanLegacyShortcuts(shortcuts) {
+  if (!shortcuts) return {};
+  const cleaned = {};
+  for (const [k, v] of Object.entries(shortcuts)) {
+    if (k === "cycle") {
+      cleaned[k] = v;
+      continue;
+    }
+    const num = parseInt(k, 10);
+    // Bỏ qua các key âm như "-1"
+    if (!isNaN(num) && num >= 0 && num < 20) {
+      cleaned[num.toString()] = v;
+    }
+  }
+  return cleaned;
+}
+
 async function loadData() {
   if (extApi.storage && extApi.storage.local) {
     const data = await extApi.storage.local.get(["accountCount", "customShortcuts"]);
@@ -246,7 +265,9 @@ async function loadData() {
       accountCount = Math.max(1, Math.min(20, data.accountCount));
     }
     if (data.customShortcuts) {
-      customShortcuts = data.customShortcuts;
+      customShortcuts = cleanLegacyShortcuts(data.customShortcuts);
+      // Lưu lại bản sạch nếu trước đó có key rác
+      extApi.storage.local.set({ customShortcuts });
     }
   }
 

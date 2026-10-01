@@ -11,9 +11,13 @@ let activeShortcuts = {};
 
 function rebuildShortcuts() {
   const result = {};
-  for (let userNum = 1; userNum <= accountCount; userNum++) {
-    if (userNum <= 9) {
-      result[userNum.toString()] = `Alt+Shift+${userNum}`;
+  for (let i = 0; i < accountCount; i++) {
+    if (i < 9) {
+      // i = 0 (Người dùng 1) -> Alt+Shift+1
+      // i = 1 (Người dùng 2) -> Alt+Shift+2
+      // i = 2 (Người dùng 3) -> Alt+Shift+3
+      // i = 4 (Người dùng 5) -> Alt+Shift+5
+      result[i.toString()] = `Alt+Shift+${i + 1}`;
     }
   }
 
@@ -21,7 +25,9 @@ function rebuildShortcuts() {
 
   if (customShortcuts) {
     for (const [k, v] of Object.entries(customShortcuts)) {
-      result[k] = v;
+      if (k === "cycle" || (!isNaN(parseInt(k, 10)) && parseInt(k, 10) >= 0)) {
+        result[k] = v;
+      }
     }
   }
   activeShortcuts = result;
@@ -127,13 +133,12 @@ window.addEventListener(
       return;
     }
 
-    // 2. Phím tắt chuyển theo số người dùng (userNum: 1, 2, ..., N)
-    for (const [key, shortcut] of Object.entries(activeShortcuts)) {
-      if (key !== "cycle" && shortcut && shortcut.toLowerCase() === combo.toLowerCase()) {
+    // 2. Phím tắt chuyển theo googleIndex (0, 1, 2, ..., N-1)
+    for (const [googleIdxStr, shortcut] of Object.entries(activeShortcuts)) {
+      if (googleIdxStr !== "cycle" && shortcut && shortcut.toLowerCase() === combo.toLowerCase()) {
         e.preventDefault();
         e.stopPropagation();
-        const userNum = parseInt(key, 10);
-        const googleIndex = userNum - 1; // userNum 1 -> googleIndex 0
+        const googleIndex = parseInt(googleIdxStr, 10);
         extApi.runtime.sendMessage({
           action: "switch",
           index: googleIndex

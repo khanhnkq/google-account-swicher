@@ -21,30 +21,33 @@ function getTargetGoogleUrl(rawUrl, targetGoogleIndex) {
       return null;
     }
 
+    // Bảo đảm index không bao giờ âm
+    const safeIndex = Math.max(0, parseInt(targetGoogleIndex, 10) || 0);
+
     // 1. URL có path /u/0/, /u/1/...
     const uRegex = /\/u\/\d+(\/|$)/;
     if (uRegex.test(url.pathname)) {
-      url.pathname = url.pathname.replace(uRegex, `/u/${targetGoogleIndex}$1`);
+      url.pathname = url.pathname.replace(uRegex, `/u/${safeIndex}$1`);
       return url.toString();
     }
 
     // 2. Query param authuser
     if (url.searchParams.has("authuser")) {
-      url.searchParams.set("authuser", targetGoogleIndex.toString());
+      url.searchParams.set("authuser", safeIndex.toString());
       return url.toString();
     }
 
     // 3. Các dịch vụ chưa có /u/ trong path
     if (url.hostname === "mail.google.com") {
-      url.pathname = url.pathname.replace(/^\/mail(\/|$)/, `/mail/u/${targetGoogleIndex}/`);
+      url.pathname = url.pathname.replace(/^\/mail(\/|$)/, `/mail/u/${safeIndex}/`);
       return url.toString();
     }
     if (url.hostname === "drive.google.com") {
-      url.pathname = url.pathname.replace(/^\/drive(\/|$)/, `/drive/u/${targetGoogleIndex}/`);
+      url.pathname = url.pathname.replace(/^\/drive(\/|$)/, `/drive/u/${safeIndex}/`);
       return url.toString();
     }
     if (url.hostname === "calendar.google.com") {
-      url.pathname = url.pathname.replace(/^\/calendar(\/|$)/, `/calendar/u/${targetGoogleIndex}/`);
+      url.pathname = url.pathname.replace(/^\/calendar(\/|$)/, `/calendar/u/${safeIndex}/`);
       return url.toString();
     }
     if (url.hostname === "docs.google.com") {
@@ -52,17 +55,17 @@ function getTargetGoogleUrl(rawUrl, targetGoogleIndex) {
       if (match) {
         const product = match[1];
         const remaining = match[3] || "";
-        url.pathname = `/${product}/u/${targetGoogleIndex}/${remaining}`;
+        url.pathname = `/${product}/u/${safeIndex}/${remaining}`;
         return url.toString();
       }
     }
     if (url.hostname === "keep.google.com") {
-      url.pathname = `/u/${targetGoogleIndex}${url.pathname}`;
+      url.pathname = `/u/${safeIndex}${url.pathname}`;
       return url.toString();
     }
 
     // 4. Fallback gán query param authuser
-    url.searchParams.set("authuser", targetGoogleIndex.toString());
+    url.searchParams.set("authuser", safeIndex.toString());
     return url.toString();
   } catch (err) {
     console.error("[Account Switcher] URL parse error:", err);
@@ -72,11 +75,12 @@ function getTargetGoogleUrl(rawUrl, targetGoogleIndex) {
 
 async function switchActiveTabAccount(targetGoogleIndex) {
   try {
+    const safeIndex = Math.max(0, parseInt(targetGoogleIndex, 10) || 0);
     const tabs = await extApi.tabs.query({ active: true, currentWindow: true });
     if (!tabs || tabs.length === 0 || !tabs[0].url) return;
 
     const activeTab = tabs[0];
-    const newUrl = getTargetGoogleUrl(activeTab.url, targetGoogleIndex);
+    const newUrl = getTargetGoogleUrl(activeTab.url, safeIndex);
     if (newUrl && newUrl !== activeTab.url) {
       await extApi.tabs.update(activeTab.id, { url: newUrl });
     }
@@ -127,18 +131,27 @@ extApi.commands.onCommand.addListener((command) => {
     cycleAccount(1);
     return;
   }
-  const match = command.match(/^switch-to-(\d+)$/);
-  if (match) {
-    const userNum = parseInt(match[1], 10); // 1..9
-    const googleIndex = userNum - 1; // 0..8
-    switchActiveTabAccount(googleIndex);
+
+  // Hỗ trợ switch-to-0..8 (0 là Người dùng 1, 1 là Người dùng 2, ..., 4 là Người dùng 5)
+  const toMatch = command.match(/^switch-to-(\d+)$/);
+  if (toMatch) {
+    const idx = parseInt(toMatch[1], 10);
+    switchActiveTabAccount(idx);
+    return;
+  }
+
+  // Hỗ trợ switch-user-1..9
+  const userMatch = command.match(/^switch-user-(\d+)$/);
+  if (userMatch) {
+    const userNum = parseInt(userMatch[1], 10);
+    switchActiveTabAccount(userNum - 1);
+    return;
   }
 });
 
 // Bắt message từ popup UI hoặc content script
 extApi.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "switch") {
-    // message.index là googleIndex (0-based)
     switchActiveTabAccount(message.index).then(() => {
       sendResponse({ status: "ok" });
     });
