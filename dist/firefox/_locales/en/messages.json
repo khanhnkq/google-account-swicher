@@ -50,16 +50,13 @@
   "shortcutHint": {
     "message": "Click on any shortcut badge to rebind it."
   },
-  "shortcutCmd0": {
-    "message": "Switch to User 0"
-  },
-  "shortcutCmd1": {
-    "message": "Switch to User 1"
-  },
-  "shortcutCmd2": {
-    "message": "Switch to User 2"
-  },
-  "shortcutCmd3": {
-    "message": "Switch to User 3"
-  }
+  "shortcutCmd0": { "message": "Switch to User 0" },
+  "shortcutCmd1": { "message": "Switch to User 1" },
+  "shortcutCmd2": { "message": "Switch to User 2" },
+  "shortcutCmd3": { "message": "Switch to User 3" },
+  "shortcutCmd4": { "message": "Switch to User 4" },
+  "shortcutCmd5": { "message": "Switch to User 5" },
+  "shortcutCmd6": { "message": "Switch to User 6" },
+  "shortcutCmd7": { "message": "Switch to User 7" },
+  "shortcutCmd8": { "message": "Switch to User 8" }
 }

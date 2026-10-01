@@ -120,6 +120,30 @@ function renderAccountGrid() {
   }
 }
 
+function getNormalizedKey(e) {
+  if (e.code) {
+    const digitMatch = e.code.match(/^Digit([0-9])$/);
+    if (digitMatch) return digitMatch[1];
+    const numpadMatch = e.code.match(/^Numpad([0-9])$/);
+    if (numpadMatch) return numpadMatch[1];
+    const keyMatch = e.code.match(/^Key([A-Z])$/i);
+    if (keyMatch) return keyMatch[1].toUpperCase();
+  }
+
+  const shiftNumMap = {
+    "!": "1", "@": "2", "#": "3", "$": "4", "%": "5",
+    "^": "6", "&": "7", "*": "8", "(": "9", ")": "0"
+  };
+  if (shiftNumMap[e.key]) {
+    return shiftNumMap[e.key];
+  }
+
+  if (e.key && e.key.length === 1) {
+    return e.key.toUpperCase();
+  }
+  return e.key;
+}
+
 function getPressedKeyCombo(e) {
   const parts = [];
   if (e.ctrlKey) parts.push("Ctrl");
@@ -127,13 +151,12 @@ function getPressedKeyCombo(e) {
   if (e.shiftKey) parts.push("Shift");
   if (e.metaKey) parts.push("Meta");
 
-  const key = e.key;
+  const key = getNormalizedKey(e);
   if (!key || ["Control", "Alt", "Shift", "Meta"].includes(key)) {
     return null;
   }
 
-  const normalized = key.length === 1 ? key.toUpperCase() : key;
-  parts.push(normalized);
+  parts.push(key);
   return parts.join("+");
 }
 
@@ -228,7 +251,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         badge.textContent = activeText;
         badge.classList.add("active");
 
-        // Nếu tài khoản hiện tại vượt quá số lượng hiển thị, tự động mở rộng để thấy
         if (detected >= accountCount) {
           setAccountCount(detected + 1);
         }

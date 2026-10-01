@@ -44,7 +44,6 @@ function loadConfig() {
 
 loadConfig();
 
-// Cập nhật khi người dùng đổi số lượng tài khoản hoặc đổi phím tắt
 if (extApi.storage && extApi.storage.onChanged) {
   extApi.storage.onChanged.addListener((changes, area) => {
     if (area === "local") {
@@ -59,6 +58,33 @@ if (extApi.storage && extApi.storage.onChanged) {
   });
 }
 
+/**
+ * Chuẩn hóa phím bấm (khắc phục lỗi Shift+5 thành % trên bàn phím chuẩn)
+ */
+function getNormalizedKey(e) {
+  if (e.code) {
+    const digitMatch = e.code.match(/^Digit([0-9])$/);
+    if (digitMatch) return digitMatch[1];
+    const numpadMatch = e.code.match(/^Numpad([0-9])$/);
+    if (numpadMatch) return numpadMatch[1];
+    const keyMatch = e.code.match(/^Key([A-Z])$/i);
+    if (keyMatch) return keyMatch[1].toUpperCase();
+  }
+
+  const shiftNumMap = {
+    "!": "1", "@": "2", "#": "3", "$": "4", "%": "5",
+    "^": "6", "&": "7", "*": "8", "(": "9", ")": "0"
+  };
+  if (shiftNumMap[e.key]) {
+    return shiftNumMap[e.key];
+  }
+
+  if (e.key && e.key.length === 1) {
+    return e.key.toUpperCase();
+  }
+  return e.key;
+}
+
 function getEventKeyCombo(e) {
   const parts = [];
   if (e.ctrlKey) parts.push("Ctrl");
@@ -66,13 +92,12 @@ function getEventKeyCombo(e) {
   if (e.shiftKey) parts.push("Shift");
   if (e.metaKey) parts.push("Meta");
 
-  const key = e.key;
+  const key = getNormalizedKey(e);
   if (!key || ["Control", "Alt", "Shift", "Meta"].includes(key)) {
     return null;
   }
 
-  const normalized = key.length === 1 ? key.toUpperCase() : key;
-  parts.push(normalized);
+  parts.push(key);
   return parts.join("+");
 }
 

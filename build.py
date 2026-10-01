@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Build script for Google Account Switcher v1.2.0
+Build script for Google Account Switcher v1.2.1
 Outputs production-ready zip / xpi packages for Chrome Web Store and Firefox Add-ons (AMO).
-Supports i18n, native UI, custom user number input, and custom keyboard shortcut recording.
+Supports up to 9 native browser commands + content script handling.
 """
 
 import json
@@ -40,36 +40,29 @@ CONTENT_SCRIPTS_CONFIG = [
     }
 ]
 
-COMMANDS_CONFIG = {
-    "switch-to-0": {
+# Firefox supports suggested_key for all commands
+FIREFOX_COMMANDS = {}
+for i in range(9):
+    FIREFOX_COMMANDS[f"switch-to-{i}"] = {
         "suggested_key": {
-            "default": "Alt+Shift+1",
-            "mac": "Alt+Shift+1"
+            "default": f"Alt+Shift+{i + 1}",
+            "mac": f"Alt+Shift+{i + 1}"
         },
-        "description": "__MSG_shortcutCmd0__"
-    },
-    "switch-to-1": {
-        "suggested_key": {
-            "default": "Alt+Shift+2",
-            "mac": "Alt+Shift+2"
-        },
-        "description": "__MSG_shortcutCmd1__"
-    },
-    "switch-to-2": {
-        "suggested_key": {
-            "default": "Alt+Shift+3",
-            "mac": "Alt+Shift+3"
-        },
-        "description": "__MSG_shortcutCmd2__"
-    },
-    "switch-to-3": {
-        "suggested_key": {
-            "default": "Alt+Shift+4",
-            "mac": "Alt+Shift+4"
-        },
-        "description": "__MSG_shortcutCmd3__"
+        "description": f"__MSG_shortcutCmd{i}__"
     }
-}
+
+# Chrome allows at most 4 commands with suggested_key
+CHROME_COMMANDS = {}
+for i in range(9):
+    cmd_def = {
+        "description": f"__MSG_shortcutCmd{i}__"
+    }
+    if i < 4:
+        cmd_def["suggested_key"] = {
+            "default": f"Alt+Shift+{i + 1}",
+            "mac": f"Alt+Shift+{i + 1}"
+        }
+    CHROME_COMMANDS[f"switch-to-{i}"] = cmd_def
 
 ICONS_CONFIG = {
     "16": "icons/icon-16.png",
@@ -125,7 +118,7 @@ def build_chrome():
         "manifest_version": 3,
         "default_locale": "en",
         "name": "__MSG_extensionName__",
-        "version": "1.2.0",
+        "version": "1.2.1",
         "description": "__MSG_extensionDescription__",
         "permissions": ["tabs", "storage"],
         "content_scripts": CONTENT_SCRIPTS_CONFIG,
@@ -138,13 +131,13 @@ def build_chrome():
             "default_icon": ICONS_CONFIG
         },
         "icons": ICONS_CONFIG,
-        "commands": COMMANDS_CONFIG
+        "commands": CHROME_COMMANDS
     }
 
     with open(os.path.join(CHROME_DIST, "manifest.json"), "w", encoding="utf-8") as f:
         json.dump(manifest, f, indent=2, ensure_ascii=False)
 
-    chrome_zip = os.path.join(DIST_DIR, "google-account-switcher-chrome-v1.2.0.zip")
+    chrome_zip = os.path.join(DIST_DIR, "google-account-switcher-chrome-v1.2.1.zip")
     create_zip(CHROME_DIST, chrome_zip)
 
 
@@ -160,7 +153,7 @@ def build_firefox():
         "manifest_version": 3,
         "default_locale": "en",
         "name": "__MSG_extensionName__",
-        "version": "1.2.0",
+        "version": "1.2.1",
         "description": "__MSG_extensionDescription__",
         "browser_specific_settings": {
             "gecko": {
@@ -179,21 +172,21 @@ def build_firefox():
             "default_icon": ICONS_CONFIG
         },
         "icons": ICONS_CONFIG,
-        "commands": COMMANDS_CONFIG
+        "commands": FIREFOX_COMMANDS
     }
 
     with open(os.path.join(FIREFOX_DIST, "manifest.json"), "w", encoding="utf-8") as f:
         json.dump(manifest, f, indent=2, ensure_ascii=False)
 
-    firefox_zip = os.path.join(DIST_DIR, "google-account-switcher-firefox-v1.2.0.zip")
-    firefox_xpi = os.path.join(DIST_DIR, "google-account-switcher-firefox-v1.2.0.xpi")
+    firefox_zip = os.path.join(DIST_DIR, "google-account-switcher-firefox-v1.2.1.zip")
+    firefox_xpi = os.path.join(DIST_DIR, "google-account-switcher-firefox-v1.2.1.xpi")
     create_zip(FIREFOX_DIST, firefox_zip)
     shutil.copy2(firefox_zip, firefox_xpi)
     print(f"📦 Created package: {firefox_xpi}")
 
 
 def main():
-    print("🚀 Starting build process v1.2.0...")
+    print("🚀 Starting build process v1.2.1...")
     os.makedirs(DIST_DIR, exist_ok=True)
     generate_icons()
     build_chrome()
