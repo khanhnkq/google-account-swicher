@@ -6,7 +6,7 @@ Tài liệu này chuẩn bị sẵn toàn bộ nội dung cần điền khi nộ
 
 ## 🦊 1. Nộp lên Firefox Add-ons (AMO)
 * **Trang nộp:** [https://addons.mozilla.org/developers/addon/submit/upload-listed](https://addons.mozilla.org/developers/addon/submit/upload-listed)
-* **File nộp:** `dist/google-account-switcher-firefox-v1.0.0.zip`
+* **File nộp:** `dist/google-account-switcher-firefox-v1.1.0.zip` (hoặc `.xpi`)
 
 ### Thông tin điền vào biểu mẫu AMO:
 * **Name:** `Fast Google Account Switcher`
@@ -36,7 +36,7 @@ Tài liệu này chuẩn bị sẵn toàn bộ nội dung cần điền khi nộ
 
 ## 🌐 2. Nộp lên Chrome Web Store
 * **Trang nộp:** [https://chrome.google.com/webstore/devconsole/](https://chrome.google.com/webstore/devconsole/)
-* **File nộp:** `dist/google-account-switcher-chrome-v1.0.0.zip`
+* **File nộp:** `dist/google-account-switcher-chrome-v1.1.0.zip`
 
 ### Thông tin điền vào biểu mẫu Chrome:
 * **Item Name:** `Fast Google Account Switcher`

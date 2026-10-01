@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-Build script for Google Fast Account Switcher
+Build script for Google Account Switcher
 Outputs production-ready zip / xpi packages for Chrome Web Store and Firefox Add-ons (AMO).
+Supports i18n, native UI, and custom user number input.
 """
 
 import json
@@ -22,34 +23,39 @@ COMMON_FILES = [
     "popup.css",
 ]
 
+COMMON_DIRS = [
+    "icons",
+    "_locales",
+]
+
 COMMANDS_CONFIG = {
     "switch-to-0": {
         "suggested_key": {
             "default": "Alt+Shift+1",
             "mac": "Alt+Shift+1"
         },
-        "description": "Switch to Google Account 0 (/u/0)"
+        "description": "__MSG_shortcutCmd0__"
     },
     "switch-to-1": {
         "suggested_key": {
             "default": "Alt+Shift+2",
             "mac": "Alt+Shift+2"
         },
-        "description": "Switch to Google Account 1 (/u/1)"
+        "description": "__MSG_shortcutCmd1__"
     },
     "switch-to-2": {
         "suggested_key": {
             "default": "Alt+Shift+3",
             "mac": "Alt+Shift+3"
         },
-        "description": "Switch to Google Account 2 (/u/2)"
+        "description": "__MSG_shortcutCmd2__"
     },
     "switch-to-3": {
         "suggested_key": {
             "default": "Alt+Shift+4",
             "mac": "Alt+Shift+4"
         },
-        "description": "Switch to Google Account 3 (/u/3)"
+        "description": "__MSG_shortcutCmd3__"
     }
 }
 
@@ -63,7 +69,6 @@ ICONS_CONFIG = {
 
 
 def generate_icons():
-    """Generates PNG icons from icon.svg if missing or updated."""
     icons_dir = os.path.join(BASE_DIR, "icons")
     os.makedirs(icons_dir, exist_ok=True)
     svg_path = os.path.join(BASE_DIR, "icon.svg")
@@ -76,8 +81,17 @@ def generate_icons():
             subprocess.run(["rsvg-convert", "-w", str(size), "-h", str(size), svg_path, "-o", png_path], check=True)
 
 
+def copy_common(target_dir):
+    for fname in COMMON_FILES:
+        shutil.copy2(os.path.join(BASE_DIR, fname), os.path.join(target_dir, fname))
+    for dname in COMMON_DIRS:
+        dest = os.path.join(target_dir, dname)
+        if os.path.exists(dest):
+            shutil.rmtree(dest)
+        shutil.copytree(os.path.join(BASE_DIR, dname), dest)
+
+
 def create_zip(source_dir, output_zip_path):
-    """Zips the contents of source_dir directly into output_zip_path (without parent directory prefix)."""
     with zipfile.ZipFile(output_zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
         for root, _, files in os.walk(source_dir):
             for file in files:
@@ -93,25 +107,20 @@ def build_chrome():
         shutil.rmtree(CHROME_DIST)
     os.makedirs(CHROME_DIST, exist_ok=True)
 
-    # Copy common files
-    for fname in COMMON_FILES:
-        shutil.copy2(os.path.join(BASE_DIR, fname), os.path.join(CHROME_DIST, fname))
+    copy_common(CHROME_DIST)
 
-    # Copy icons
-    shutil.copytree(os.path.join(BASE_DIR, "icons"), os.path.join(CHROME_DIST, "icons"))
-
-    # Manifest for Chrome MV3
     manifest = {
         "manifest_version": 3,
-        "name": "Fast Google Account Switcher",
-        "version": "1.0.0",
-        "description": "Instantly switch Google accounts (/u/0, /u/1, etc.) using custom keyboard shortcuts.",
+        "default_locale": "en",
+        "name": "__MSG_extensionName__",
+        "version": "1.1.0",
+        "description": "__MSG_extensionDescription__",
         "permissions": ["tabs"],
         "background": {
             "service_worker": "background.js"
         },
         "action": {
-            "default_title": "Google Account Switcher",
+            "default_title": "__MSG_title__",
             "default_popup": "popup.html",
             "default_icon": ICONS_CONFIG
         },
@@ -122,7 +131,7 @@ def build_chrome():
     with open(os.path.join(CHROME_DIST, "manifest.json"), "w", encoding="utf-8") as f:
         json.dump(manifest, f, indent=2, ensure_ascii=False)
 
-    chrome_zip = os.path.join(DIST_DIR, "google-account-switcher-chrome-v1.0.0.zip")
+    chrome_zip = os.path.join(DIST_DIR, "google-account-switcher-chrome-v1.1.0.zip")
     create_zip(CHROME_DIST, chrome_zip)
 
 
@@ -132,19 +141,14 @@ def build_firefox():
         shutil.rmtree(FIREFOX_DIST)
     os.makedirs(FIREFOX_DIST, exist_ok=True)
 
-    # Copy common files
-    for fname in COMMON_FILES:
-        shutil.copy2(os.path.join(BASE_DIR, fname), os.path.join(FIREFOX_DIST, fname))
+    copy_common(FIREFOX_DIST)
 
-    # Copy icons
-    shutil.copytree(os.path.join(BASE_DIR, "icons"), os.path.join(FIREFOX_DIST, "icons"))
-
-    # Manifest for Firefox MV3
     manifest = {
         "manifest_version": 3,
-        "name": "Fast Google Account Switcher",
-        "version": "1.0.0",
-        "description": "Instantly switch Google accounts (/u/0, /u/1, etc.) using custom keyboard shortcuts.",
+        "default_locale": "en",
+        "name": "__MSG_extensionName__",
+        "version": "1.1.0",
+        "description": "__MSG_extensionDescription__",
         "browser_specific_settings": {
             "gecko": {
                 "id": "fast-google-account-switcher@khanhnkq.local",
@@ -156,7 +160,7 @@ def build_firefox():
             "scripts": ["background.js"]
         },
         "action": {
-            "default_title": "Google Account Switcher",
+            "default_title": "__MSG_title__",
             "default_popup": "popup.html",
             "default_icon": ICONS_CONFIG
         },
@@ -167,15 +171,15 @@ def build_firefox():
     with open(os.path.join(FIREFOX_DIST, "manifest.json"), "w", encoding="utf-8") as f:
         json.dump(manifest, f, indent=2, ensure_ascii=False)
 
-    firefox_zip = os.path.join(DIST_DIR, "google-account-switcher-firefox-v1.0.0.zip")
-    firefox_xpi = os.path.join(DIST_DIR, "google-account-switcher-firefox-v1.0.0.xpi")
+    firefox_zip = os.path.join(DIST_DIR, "google-account-switcher-firefox-v1.1.0.zip")
+    firefox_xpi = os.path.join(DIST_DIR, "google-account-switcher-firefox-v1.1.0.xpi")
     create_zip(FIREFOX_DIST, firefox_zip)
     shutil.copy2(firefox_zip, firefox_xpi)
     print(f"📦 Created package: {firefox_xpi}")
 
 
 def main():
-    print("🚀 Starting build process...")
+    print("🚀 Starting build process v1.1.0...")
     os.makedirs(DIST_DIR, exist_ok=True)
     generate_icons()
     build_chrome()

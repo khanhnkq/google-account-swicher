@@ -1,0 +1,65 @@
+{
+  "extensionName": {
+    "message": "Google Account Switcher",
+    "description": "Extension name"
+  },
+  "extensionDescription": {
+    "message": "Quickly switch Google accounts using keyboard shortcuts or popup menu.",
+    "description": "Extension description"
+  },
+  "title": {
+    "message": "Google Accounts"
+  },
+  "defaultUser": {
+    "message": "User 0 (Default)"
+  },
+  "userLabel": {
+    "message": "User $INDEX$",
+    "placeholders": {
+      "index": {
+        "content": "$1"
+      }
+    }
+  },
+  "currentUser": {
+    "message": "Active: User $INDEX$",
+    "placeholders": {
+      "index": {
+        "content": "$1"
+      }
+    }
+  },
+  "notGoogle": {
+    "message": "Not a Google page"
+  },
+  "detecting": {
+    "message": "Detecting..."
+  },
+  "quickSwitch": {
+    "message": "Quick Switch"
+  },
+  "customInputLabel": {
+    "message": "Jump to custom user number:"
+  },
+  "customInputPlaceholder": {
+    "message": "e.g. 4"
+  },
+  "switchBtn": {
+    "message": "Switch"
+  },
+  "shortcutHint": {
+    "message": "Shortcuts setting: about:addons ⚙️"
+  },
+  "shortcutCmd0": {
+    "message": "Switch to User 0"
+  },
+  "shortcutCmd1": {
+    "message": "Switch to User 1"
+  },
+  "shortcutCmd2": {
+    "message": "Switch to User 2"
+  },
+  "shortcutCmd3": {
+    "message": "Switch to User 3"
+  }
+}

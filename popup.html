@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,53 +7,87 @@
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-  <div class="container">
+  <div class="panel">
+    <!-- Header -->
     <header class="header">
-      <div class="logo-wrap">
-        <img src="icons/icon-48.png" class="logo" alt="icon">
-        <span class="title">Google Switcher</span>
+      <div class="title-group">
+        <img src="icons/icon-32.png" class="app-icon" alt="icon">
+        <h1 class="app-title" data-i18n="title">Tài khoản Google</h1>
       </div>
-      <span class="badge" id="current-badge">Đang quét...</span>
+      <span class="status-badge" id="current-badge" data-i18n="detecting">Đang kiểm tra...</span>
     </header>
 
-    <div class="account-list">
-      <button class="account-btn" data-index="0">
-        <div class="acc-info">
-          <span class="acc-avatar">0</span>
-          <span class="acc-name">Account 0 (Mặc định)</span>
-        </div>
-        <kbd class="shortcut">Alt+Shift+1</kbd>
-      </button>
+    <!-- Quick Switch Section -->
+    <section class="section">
+      <div class="account-grid">
+        <button type="button" class="account-card" data-index="0">
+          <div class="account-visual">
+            <span class="avatar">0</span>
+            <div class="meta">
+              <span class="label" data-i18n="defaultUser">Người dùng 0 (Mặc định)</span>
+            </div>
+          </div>
+          <kbd class="key-badge">Alt+Shift+1</kbd>
+        </button>
 
-      <button class="account-btn" data-index="1">
-        <div class="acc-info">
-          <span class="acc-avatar">1</span>
-          <span class="acc-name">Account 1</span>
-        </div>
-        <kbd class="shortcut">Alt+Shift+2</kbd>
-      </button>
+        <button type="button" class="account-card" data-index="1">
+          <div class="account-visual">
+            <span class="avatar">1</span>
+            <div class="meta">
+              <span class="label" data-user-index="1">Người dùng 1</span>
+            </div>
+          </div>
+          <kbd class="key-badge">Alt+Shift+2</kbd>
+        </button>
 
-      <button class="account-btn" data-index="2">
-        <div class="acc-info">
-          <span class="acc-avatar">2</span>
-          <span class="acc-name">Account 2</span>
-        </div>
-        <kbd class="shortcut">Alt+Shift+3</kbd>
-      </button>
+        <button type="button" class="account-card" data-index="2">
+          <div class="account-visual">
+            <span class="avatar">2</span>
+            <div class="meta">
+              <span class="label" data-user-index="2">Người dùng 2</span>
+            </div>
+          </div>
+          <kbd class="key-badge">Alt+Shift+3</kbd>
+        </button>
 
-      <button class="account-btn" data-index="3">
-        <div class="acc-info">
-          <span class="acc-avatar">3</span>
-          <span class="acc-name">Account 3</span>
-        </div>
-        <kbd class="shortcut">Alt+Shift+4</kbd>
-      </button>
-    </div>
+        <button type="button" class="account-card" data-index="3">
+          <div class="account-visual">
+            <span class="avatar">3</span>
+            <div class="meta">
+              <span class="label" data-user-index="3">Người dùng 3</span>
+            </div>
+          </div>
+          <kbd class="key-badge">Alt+Shift+4</kbd>
+        </button>
+      </div>
+    </section>
 
+    <!-- Custom Number Input Section -->
+    <section class="section custom-section">
+      <form id="custom-form" class="custom-form">
+        <label for="custom-index" class="form-label" data-i18n="customInputLabel">Nhập số người dùng khác:</label>
+        <div class="input-row">
+          <input
+            type="number"
+            id="custom-index"
+            class="native-input"
+            min="0"
+            max="99"
+            data-i18n-placeholder="customInputPlaceholder"
+            placeholder="Ví dụ: 4"
+            required
+          />
+          <button type="submit" class="native-btn primary" id="custom-submit-btn" data-i18n="switchBtn">Chuyển</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Footer -->
     <footer class="footer">
-      <small>Đổi phím tắt tại: <code>about:addons</code> ⚙️</small>
+      <span class="hint-text" data-i18n="shortcutHint">Đổi phím tắt tại: about:addons ⚙️</span>
     </footer>
   </div>
+
   <script src="popup.js"></script>
 </body>
 </html>

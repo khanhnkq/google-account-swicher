@@ -1,8 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "Google Fast Account Switcher",
-  "version": "1.0.0",
-  "description": "Chuyển nhanh tài khoản Google (/u/0, /u/1...) bằng phím tắt hoặc popup.",
+  "default_locale": "en",
+  "name": "__MSG_extensionName__",
+  "version": "1.1.0",
+  "description": "__MSG_extensionDescription__",
   "browser_specific_settings": {
     "gecko": {
       "id": "fast-google-account-switcher@khanhnkq.local",
@@ -10,45 +11,52 @@
     }
   },
   "permissions": [
-    "tabs",
-    "activeTab"
+    "tabs"
   ],
   "background": {
     "scripts": ["background.js"]
   },
   "action": {
-    "default_icon": "icon.svg",
-    "default_title": "Google Fast Switcher",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    },
+    "default_title": "__MSG_title__",
     "default_popup": "popup.html"
   },
   "icons": {
-    "48": "icon.svg",
-    "96": "icon.svg"
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "96": "icons/icon-96.png",
+    "128": "icons/icon-128.png"
   },
   "commands": {
     "switch-to-0": {
       "suggested_key": {
         "default": "Alt+Shift+1"
       },
-      "description": "Chuyển sang Account 0 (/u/0)"
+      "description": "__MSG_shortcutCmd0__"
     },
     "switch-to-1": {
       "suggested_key": {
         "default": "Alt+Shift+2"
       },
-      "description": "Chuyển sang Account 1 (/u/1)"
+      "description": "__MSG_shortcutCmd1__"
     },
     "switch-to-2": {
       "suggested_key": {
         "default": "Alt+Shift+3"
       },
-      "description": "Chuyển sang Account 2 (/u/2)"
+      "description": "__MSG_shortcutCmd2__"
     },
     "switch-to-3": {
       "suggested_key": {
         "default": "Alt+Shift+4"
       },
-      "description": "Chuyển sang Account 3 (/u/3)"
+      "description": "__MSG_shortcutCmd3__"
     }
   }
 }

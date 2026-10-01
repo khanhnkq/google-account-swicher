@@ -1,0 +1,65 @@
+{
+  "extensionName": {
+    "message": "Đổi tài khoản Google",
+    "description": "Tên tiện ích mở rộng"
+  },
+  "extensionDescription": {
+    "message": "Chuyển nhanh tài khoản Google bằng phím tắt hoặc thanh công cụ.",
+    "description": "Mô tả tiện ích mở rộng"
+  },
+  "title": {
+    "message": "Tài khoản Google"
+  },
+  "defaultUser": {
+    "message": "Người dùng 0 (Mặc định)"
+  },
+  "userLabel": {
+    "message": "Người dùng $INDEX$",
+    "placeholders": {
+      "index": {
+        "content": "$1"
+      }
+    }
+  },
+  "currentUser": {
+    "message": "Đang dùng: Người dùng $INDEX$",
+    "placeholders": {
+      "index": {
+        "content": "$1"
+      }
+    }
+  },
+  "notGoogle": {
+    "message": "Không phải trang Google"
+  },
+  "detecting": {
+    "message": "Đang kiểm tra..."
+  },
+  "quickSwitch": {
+    "message": "Chọn nhanh"
+  },
+  "customInputLabel": {
+    "message": "Nhập số người dùng:"
+  },
+  "customInputPlaceholder": {
+    "message": "Ví dụ: 4"
+  },
+  "switchBtn": {
+    "message": "Chuyển"
+  },
+  "shortcutHint": {
+    "message": "Đổi phím tắt tại: about:addons ⚙️"
+  },
+  "shortcutCmd0": {
+    "message": "Chuyển sang Người dùng 0"
+  },
+  "shortcutCmd1": {
+    "message": "Chuyển sang Người dùng 1"
+  },
+  "shortcutCmd2": {
+    "message": "Chuyển sang Người dùng 2"
+  },
+  "shortcutCmd3": {
+    "message": "Chuyển sang Người dùng 3"
+  }
+}
