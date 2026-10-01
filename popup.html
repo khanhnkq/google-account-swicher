@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Account Switcher</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="logo-wrap">
+        <img src="icon.svg" class="logo" alt="icon">
+        <span class="title">Google Switcher</span>
+      </div>
+      <span class="badge" id="current-badge">Đang quét...</span>
+    </header>
+
+    <div class="account-list">
+      <button class="account-btn" data-index="0">
+        <div class="acc-info">
+          <span class="acc-avatar">0</span>
+          <span class="acc-name">Account 0 (Mặc định)</span>
+        </div>
+        <kbd class="shortcut">Alt+Shift+1</kbd>
+      </button>
+
+      <button class="account-btn" data-index="1">
+        <div class="acc-info">
+          <span class="acc-avatar">1</span>
+          <span class="acc-name">Account 1</span>
+        </div>
+        <kbd class="shortcut">Alt+Shift+2</kbd>
+      </button>
+
+      <button class="account-btn" data-index="2">
+        <div class="acc-info">
+          <span class="acc-avatar">2</span>
+          <span class="acc-name">Account 2</span>
+        </div>
+        <kbd class="shortcut">Alt+Shift+3</kbd>
+      </button>
+
+      <button class="account-btn" data-index="3">
+        <div class="acc-info">
+          <span class="acc-avatar">3</span>
+          <span class="acc-name">Account 3</span>
+        </div>
+        <kbd class="shortcut">Alt+Shift+4</kbd>
+      </button>
+    </div>
+
+    <footer class="footer">
+      <small>Đổi phím tắt tại: <code>about:addons</code> ⚙️</small>
+    </footer>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
