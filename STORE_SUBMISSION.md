@@ -1,4 +1,4 @@
-# 📝 Thông tin nộp lên Chrome Web Store & Firefox AMO (v1.3.2)
+# 📝 Thông tin nộp lên Chrome Web Store & Firefox AMO (v1.3.3)
 
 Tài liệu này chuẩn bị sẵn toàn bộ nội dung cần điền khi nộp extension lên **Chrome Web Store** và **Mozilla Add-ons (AMO)**.
 
@@ -6,7 +6,7 @@ Tài liệu này chuẩn bị sẵn toàn bộ nội dung cần điền khi nộ
 
 ## 🦊 1. Nộp lên Firefox Add-ons (AMO)
 * **Trang nộp:** [https://addons.mozilla.org/developers/addon/submit/upload-listed](https://addons.mozilla.org/developers/addon/submit/upload-listed)
-* **File nộp:** `dist/google-account-switcher-firefox-v1.3.2.zip` (hoặc `.xpi`)
+* **File nộp:** `dist/google-account-switcher-firefox-v1.3.3.zip` (hoặc `.xpi`)
 
 ### Thông tin điền vào biểu mẫu AMO:
 * **Name:** `Fast Google Account Switcher`

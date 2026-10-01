@@ -137,7 +137,7 @@ def build_chrome():
         "manifest_version": 3,
         "default_locale": "en",
         "name": "__MSG_extensionName__",
-        "version": "1.3.2",
+        "version": "1.3.3",
         "description": "__MSG_extensionDescription__",
         "permissions": ["tabs", "storage"],
         "content_scripts": CONTENT_SCRIPTS_CONFIG,
@@ -156,7 +156,7 @@ def build_chrome():
     with open(os.path.join(CHROME_DIST, "manifest.json"), "w", encoding="utf-8") as f:
         json.dump(manifest, f, indent=2, ensure_ascii=False)
 
-    chrome_zip = os.path.join(DIST_DIR, "google-account-switcher-chrome-v1.3.2.zip")
+    chrome_zip = os.path.join(DIST_DIR, "google-account-switcher-chrome-v1.3.3.zip")
     create_zip(CHROME_DIST, chrome_zip)
 
 
@@ -172,12 +172,15 @@ def build_firefox():
         "manifest_version": 3,
         "default_locale": "en",
         "name": "__MSG_extensionName__",
-        "version": "1.3.2",
+        "version": "1.3.3",
         "description": "__MSG_extensionDescription__",
         "browser_specific_settings": {
             "gecko": {
                 "id": "fast-google-account-switcher@khanhnkq.local",
-                "strict_min_version": "109.0"
+                "strict_min_version": "109.0",
+                "data_collection_permissions": {
+                    "required": ["none"]
+                }
             }
         },
         "permissions": ["tabs", "storage"],
@@ -197,15 +200,15 @@ def build_firefox():
     with open(os.path.join(FIREFOX_DIST, "manifest.json"), "w", encoding="utf-8") as f:
         json.dump(manifest, f, indent=2, ensure_ascii=False)
 
-    firefox_zip = os.path.join(DIST_DIR, "google-account-switcher-firefox-v1.3.2.zip")
-    firefox_xpi = os.path.join(DIST_DIR, "google-account-switcher-firefox-v1.3.2.xpi")
+    firefox_zip = os.path.join(DIST_DIR, "google-account-switcher-firefox-v1.3.3.zip")
+    firefox_xpi = os.path.join(DIST_DIR, "google-account-switcher-firefox-v1.3.3.xpi")
     create_zip(FIREFOX_DIST, firefox_zip)
     shutil.copy2(firefox_zip, firefox_xpi)
     print(f"📦 Created package: {firefox_xpi}")
 
 
 def main():
-    print("🚀 Starting build process v1.3.2...")
+    print("🚀 Starting build process v1.3.3...")
     os.makedirs(DIST_DIR, exist_ok=True)
     generate_icons()
     build_chrome()
