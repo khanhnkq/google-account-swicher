@@ -4,7 +4,7 @@
     "description": "Tên tiện ích mở rộng"
   },
   "extensionDescription": {
-    "message": "Chuyển nhanh tài khoản Google bằng phím tắt hoặc thanh công cụ.",
+    "message": "Chuyển nhanh tài khoản Google bằng phím tắt tùy biến hoặc thanh công cụ.",
     "description": "Mô tả tiện ích mở rộng"
   },
   "title": {
@@ -39,7 +39,7 @@
     "message": "Chọn nhanh"
   },
   "customInputLabel": {
-    "message": "Nhập số người dùng:"
+    "message": "Nhập số người dùng khác:"
   },
   "customInputPlaceholder": {
     "message": "Ví dụ: 4"
@@ -47,8 +47,17 @@
   "switchBtn": {
     "message": "Chuyển"
   },
+  "clickToChange": {
+    "message": "Bấm để đổi phím tắt"
+  },
+  "recordingKey": {
+    "message": "Nhấn phím..."
+  },
+  "resetDefaults": {
+    "message": "Khôi phục phím gốc"
+  },
   "shortcutHint": {
-    "message": "Đổi phím tắt tại: about:addons ⚙️"
+    "message": "Bấm vào ô phím tắt để gán bất kỳ phím nào"
   },
   "shortcutCmd0": {
     "message": "Chuyển sang Người dùng 0"

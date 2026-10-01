@@ -4,7 +4,7 @@
     "description": "Extension name"
   },
   "extensionDescription": {
-    "message": "Quickly switch Google accounts using keyboard shortcuts or popup menu.",
+    "message": "Quickly switch Google accounts using customizable keyboard shortcuts or popup menu.",
     "description": "Extension description"
   },
   "title": {
@@ -47,8 +47,17 @@
   "switchBtn": {
     "message": "Switch"
   },
+  "clickToChange": {
+    "message": "Click to customize shortcut"
+  },
+  "recordingKey": {
+    "message": "Press keys..."
+  },
+  "resetDefaults": {
+    "message": "Reset shortcuts"
+  },
   "shortcutHint": {
-    "message": "Shortcuts setting: about:addons ⚙️"
+    "message": "Click on any shortcut badge to rebind it."
   },
   "shortcutCmd0": {
     "message": "Switch to User 0"

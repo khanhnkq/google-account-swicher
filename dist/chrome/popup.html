@@ -20,45 +20,45 @@
     <!-- Quick Switch Section -->
     <section class="section">
       <div class="account-grid">
-        <button type="button" class="account-card" data-index="0">
-          <div class="account-visual">
+        <div class="account-row" data-index="0">
+          <button type="button" class="account-btn" data-index="0">
             <span class="avatar">0</span>
-            <div class="meta">
-              <span class="label" data-i18n="defaultUser">Người dùng 0 (Mặc định)</span>
-            </div>
-          </div>
-          <kbd class="key-badge">Alt+Shift+1</kbd>
-        </button>
+            <span class="label" data-i18n="defaultUser">Người dùng 0 (Mặc định)</span>
+          </button>
+          <button type="button" class="key-badge-btn" data-key-index="0" data-i18n-title="clickToChange" title="Bấm để đổi phím tắt">
+            <kbd class="key-badge">Alt+Shift+1</kbd>
+          </button>
+        </div>
 
-        <button type="button" class="account-card" data-index="1">
-          <div class="account-visual">
+        <div class="account-row" data-index="1">
+          <button type="button" class="account-btn" data-index="1">
             <span class="avatar">1</span>
-            <div class="meta">
-              <span class="label" data-user-index="1">Người dùng 1</span>
-            </div>
-          </div>
-          <kbd class="key-badge">Alt+Shift+2</kbd>
-        </button>
+            <span class="label" data-user-index="1">Người dùng 1</span>
+          </button>
+          <button type="button" class="key-badge-btn" data-key-index="1" data-i18n-title="clickToChange" title="Bấm để đổi phím tắt">
+            <kbd class="key-badge">Alt+Shift+2</kbd>
+          </button>
+        </div>
 
-        <button type="button" class="account-card" data-index="2">
-          <div class="account-visual">
+        <div class="account-row" data-index="2">
+          <button type="button" class="account-btn" data-index="2">
             <span class="avatar">2</span>
-            <div class="meta">
-              <span class="label" data-user-index="2">Người dùng 2</span>
-            </div>
-          </div>
-          <kbd class="key-badge">Alt+Shift+3</kbd>
-        </button>
+            <span class="label" data-user-index="2">Người dùng 2</span>
+          </button>
+          <button type="button" class="key-badge-btn" data-key-index="2" data-i18n-title="clickToChange" title="Bấm để đổi phím tắt">
+            <kbd class="key-badge">Alt+Shift+3</kbd>
+          </button>
+        </div>
 
-        <button type="button" class="account-card" data-index="3">
-          <div class="account-visual">
+        <div class="account-row" data-index="3">
+          <button type="button" class="account-btn" data-index="3">
             <span class="avatar">3</span>
-            <div class="meta">
-              <span class="label" data-user-index="3">Người dùng 3</span>
-            </div>
-          </div>
-          <kbd class="key-badge">Alt+Shift+4</kbd>
-        </button>
+            <span class="label" data-user-index="3">Người dùng 3</span>
+          </button>
+          <button type="button" class="key-badge-btn" data-key-index="3" data-i18n-title="clickToChange" title="Bấm để đổi phím tắt">
+            <kbd class="key-badge">Alt+Shift+4</kbd>
+          </button>
+        </div>
       </div>
     </section>
 
@@ -84,7 +84,10 @@
 
     <!-- Footer -->
     <footer class="footer">
-      <span class="hint-text" data-i18n="shortcutHint">Đổi phím tắt tại: about:addons ⚙️</span>
+      <div class="footer-actions">
+        <span class="hint-text" data-i18n="shortcutHint">Bấm vào ô phím tắt để gán bất kỳ phím nào</span>
+        <button type="button" class="reset-link" id="reset-shortcuts-btn" data-i18n="resetDefaults">Khôi phục phím gốc</button>
+      </div>
     </footer>
   </div>
 

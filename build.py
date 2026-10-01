@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Build script for Google Account Switcher
+Build script for Google Account Switcher v1.2.0
 Outputs production-ready zip / xpi packages for Chrome Web Store and Firefox Add-ons (AMO).
-Supports i18n, native UI, and custom user number input.
+Supports i18n, native UI, custom user number input, and custom keyboard shortcut recording.
 """
 
 import json
@@ -18,6 +18,7 @@ FIREFOX_DIST = os.path.join(DIST_DIR, "firefox")
 
 COMMON_FILES = [
     "background.js",
+    "content.js",
     "popup.html",
     "popup.js",
     "popup.css",
@@ -26,6 +27,17 @@ COMMON_FILES = [
 COMMON_DIRS = [
     "icons",
     "_locales",
+]
+
+CONTENT_SCRIPTS_CONFIG = [
+    {
+        "matches": [
+            "https://*.google.com/*",
+            "https://*.youtube.com/*"
+        ],
+        "js": ["content.js"],
+        "run_at": "document_start"
+    }
 ]
 
 COMMANDS_CONFIG = {
@@ -113,9 +125,10 @@ def build_chrome():
         "manifest_version": 3,
         "default_locale": "en",
         "name": "__MSG_extensionName__",
-        "version": "1.1.0",
+        "version": "1.2.0",
         "description": "__MSG_extensionDescription__",
-        "permissions": ["tabs"],
+        "permissions": ["tabs", "storage"],
+        "content_scripts": CONTENT_SCRIPTS_CONFIG,
         "background": {
             "service_worker": "background.js"
         },
@@ -131,7 +144,7 @@ def build_chrome():
     with open(os.path.join(CHROME_DIST, "manifest.json"), "w", encoding="utf-8") as f:
         json.dump(manifest, f, indent=2, ensure_ascii=False)
 
-    chrome_zip = os.path.join(DIST_DIR, "google-account-switcher-chrome-v1.1.0.zip")
+    chrome_zip = os.path.join(DIST_DIR, "google-account-switcher-chrome-v1.2.0.zip")
     create_zip(CHROME_DIST, chrome_zip)
 
 
@@ -147,7 +160,7 @@ def build_firefox():
         "manifest_version": 3,
         "default_locale": "en",
         "name": "__MSG_extensionName__",
-        "version": "1.1.0",
+        "version": "1.2.0",
         "description": "__MSG_extensionDescription__",
         "browser_specific_settings": {
             "gecko": {
@@ -155,7 +168,8 @@ def build_firefox():
                 "strict_min_version": "109.0"
             }
         },
-        "permissions": ["tabs"],
+        "permissions": ["tabs", "storage"],
+        "content_scripts": CONTENT_SCRIPTS_CONFIG,
         "background": {
             "scripts": ["background.js"]
         },
@@ -171,15 +185,15 @@ def build_firefox():
     with open(os.path.join(FIREFOX_DIST, "manifest.json"), "w", encoding="utf-8") as f:
         json.dump(manifest, f, indent=2, ensure_ascii=False)
 
-    firefox_zip = os.path.join(DIST_DIR, "google-account-switcher-firefox-v1.1.0.zip")
-    firefox_xpi = os.path.join(DIST_DIR, "google-account-switcher-firefox-v1.1.0.xpi")
+    firefox_zip = os.path.join(DIST_DIR, "google-account-switcher-firefox-v1.2.0.zip")
+    firefox_xpi = os.path.join(DIST_DIR, "google-account-switcher-firefox-v1.2.0.xpi")
     create_zip(FIREFOX_DIST, firefox_zip)
     shutil.copy2(firefox_zip, firefox_xpi)
     print(f"📦 Created package: {firefox_xpi}")
 
 
 def main():
-    print("🚀 Starting build process v1.1.0...")
+    print("🚀 Starting build process v1.2.0...")
     os.makedirs(DIST_DIR, exist_ok=True)
     generate_icons()
     build_chrome()

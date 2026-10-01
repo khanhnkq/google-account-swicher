@@ -23,7 +23,11 @@
   --avatar-text: #1a73e8;
   --kbd-bg: #f1f3f4;
   --kbd-border: #dadce0;
-  --kbd-text: #5f6368;
+  --kbd-text: #3c4043;
+  --kbd-hover-border: #1a73e8;
+  --record-bg: #fce8e6;
+  --record-text: #c5221f;
+  --record-border: #d93025;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -51,7 +55,11 @@
     --avatar-text: #8ab4f8;
     --kbd-bg: #35363a;
     --kbd-border: #5f6368;
-    --kbd-text: #bdc1c6;
+    --kbd-text: #e8eaed;
+    --kbd-hover-border: #8ab4f8;
+    --record-bg: #3c1e1e;
+    --record-text: #f28b82;
+    --record-border: #ea4335;
   }
 }
 
@@ -62,7 +70,7 @@
 }
 
 body {
-  width: 300px;
+  width: 320px;
   background-color: var(--panel-bg);
   color: var(--text-main);
   font-family: var(--font-system);
@@ -134,11 +142,18 @@ body {
   gap: 6px;
 }
 
-.account-card {
+.account-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 6px;
   width: 100%;
+}
+
+.account-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 8px 10px;
   border: 1px solid var(--border-color);
   border-radius: 8px;
@@ -150,20 +165,14 @@ body {
   font-family: inherit;
 }
 
-.account-card:hover {
+.account-btn:hover {
   background-color: var(--card-hover);
   border-color: var(--primary-color);
 }
 
-.account-card.current {
+.account-row.current .account-btn {
   background-color: var(--card-current);
   border-color: var(--card-current-border);
-}
-
-.account-visual {
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 
 .avatar {
@@ -179,24 +188,57 @@ body {
   justify-content: center;
 }
 
-.meta .label {
+.label {
   font-size: 12.5px;
   font-weight: 500;
 }
 
+/* Shortcut Badge Button */
+.key-badge-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
 .key-badge {
-  font-size: 10.5px;
-  padding: 2px 6px;
-  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 5px 8px;
+  border-radius: 6px;
   background-color: var(--kbd-bg);
   border: 1px solid var(--kbd-border);
   color: var(--kbd-text);
   font-family: inherit;
+  transition: all 0.15s ease;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.key-badge-btn:hover .key-badge {
+  border-color: var(--kbd-hover-border);
+  background-color: var(--card-hover);
+}
+
+.key-badge-btn.recording .key-badge {
+  background-color: var(--record-bg);
+  color: var(--record-text);
+  border-color: var(--record-border);
+  font-weight: 600;
+  animation: pulse-border 1.2s infinite;
+}
+
+@keyframes pulse-border {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
 }
 
 /* Custom Number Form */
 .custom-section {
-  padding-top: 4px;
+  padding-top: 6px;
   border-top: 1px solid var(--border-color);
 }
 
@@ -260,10 +302,32 @@ body {
 .footer {
   padding-top: 4px;
   border-top: 1px solid var(--border-color);
-  text-align: center;
+}
+
+.footer-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 }
 
 .hint-text {
   font-size: 11px;
   color: var(--text-muted);
+  flex: 1;
+}
+
+.reset-link {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  font-size: 11px;
+  cursor: pointer;
+  text-decoration: underline;
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.reset-link:hover {
+  color: var(--primary-hover);
 }

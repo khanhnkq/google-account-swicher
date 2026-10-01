@@ -2,10 +2,23 @@
   "manifest_version": 3,
   "default_locale": "en",
   "name": "__MSG_extensionName__",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "__MSG_extensionDescription__",
   "permissions": [
-    "tabs"
+    "tabs",
+    "storage"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.google.com/*",
+        "https://*.youtube.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_start"
+    }
   ],
   "background": {
     "service_worker": "background.js"
