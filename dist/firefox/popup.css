@@ -14,7 +14,6 @@
   --primary-text: #ffffff;
   --input-bg: #ffffff;
   --input-border: #dadce0;
-  --input-focus: #1a73e8;
   --badge-bg: #f1f3f4;
   --badge-text: #5f6368;
   --badge-active-bg: #e6f4ea;
@@ -46,7 +45,6 @@
     --primary-text: #202124;
     --input-bg: #292a2d;
     --input-border: #5f6368;
-    --input-focus: #8ab4f8;
     --badge-bg: #35363a;
     --badge-text: #9aa0a6;
     --badge-active-bg: #0f3822;
@@ -91,7 +89,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-bottom: 10px;
+  padding-bottom: 8px;
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -129,17 +127,94 @@ body {
   font-weight: 600;
 }
 
-/* Quick Account Grid */
+/* Account Count Stepper Bar */
+.account-count-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--card-bg);
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.count-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background-color: var(--panel-bg);
+  overflow: hidden;
+}
+
+.stepper-btn {
+  width: 26px;
+  height: 26px;
+  background: none;
+  border: none;
+  color: var(--text-main);
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s;
+}
+
+.stepper-btn:hover {
+  background-color: var(--card-hover);
+  color: var(--primary-color);
+}
+
+.count-input {
+  width: 34px;
+  height: 26px;
+  border: none;
+  background: none;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-main);
+  outline: none;
+  -moz-appearance: textfield;
+}
+
+.count-input::-webkit-outer-spin-button,
+.count-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Account Grid */
 .section {
   display: flex;
   flex-direction: column;
-  gap: 8px;
 }
 
 .account-grid {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  max-height: 280px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+/* Scrollbar */
+.account-grid::-webkit-scrollbar {
+  width: 5px;
+}
+
+.account-grid::-webkit-scrollbar-thumb {
+  background-color: var(--border-color);
+  border-radius: 4px;
 }
 
 .account-row {
@@ -186,11 +261,15 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .label {
   font-size: 12.5px;
   font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Shortcut Badge Button */
@@ -236,71 +315,9 @@ body {
   100% { transform: scale(1); }
 }
 
-/* Custom Number Form */
-.custom-section {
-  padding-top: 6px;
-  border-top: 1px solid var(--border-color);
-}
-
-.custom-form {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.form-label {
-  font-size: 11.5px;
-  font-weight: 500;
-  color: var(--text-muted);
-}
-
-.input-row {
-  display: flex;
-  gap: 8px;
-}
-
-.native-input {
-  flex: 1;
-  padding: 7px 10px;
-  border: 1px solid var(--input-border);
-  border-radius: 6px;
-  background-color: var(--input-bg);
-  color: var(--text-main);
-  font-size: 13px;
-  font-family: inherit;
-  outline: none;
-  transition: border-color 0.15s;
-}
-
-.native-input:focus {
-  border-color: var(--input-focus);
-  box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
-}
-
-.native-btn {
-  padding: 7px 14px;
-  border: none;
-  border-radius: 6px;
-  font-size: 12.5px;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: inherit;
-  transition: background-color 0.15s;
-  white-space: nowrap;
-}
-
-.native-btn.primary {
-  background-color: var(--primary-color);
-  color: var(--primary-text);
-}
-
-.native-btn.primary:hover {
-  background-color: var(--primary-hover);
-}
-
 /* Footer */
 .footer {
-  padding-top: 4px;
+  padding-top: 6px;
   border-top: 1px solid var(--border-color);
 }
 

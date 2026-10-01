@@ -35,17 +35,8 @@
   "detecting": {
     "message": "Đang kiểm tra..."
   },
-  "quickSwitch": {
-    "message": "Chọn nhanh"
-  },
-  "customInputLabel": {
-    "message": "Nhập số người dùng khác:"
-  },
-  "customInputPlaceholder": {
-    "message": "Ví dụ: 4"
-  },
-  "switchBtn": {
-    "message": "Chuyển"
+  "accountCountLabel": {
+    "message": "Số lượng tài khoản:"
   },
   "clickToChange": {
     "message": "Bấm để đổi phím tắt"

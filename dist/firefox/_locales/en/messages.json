@@ -35,17 +35,8 @@
   "detecting": {
     "message": "Detecting..."
   },
-  "quickSwitch": {
-    "message": "Quick Switch"
-  },
-  "customInputLabel": {
-    "message": "Jump to custom user number:"
-  },
-  "customInputPlaceholder": {
-    "message": "e.g. 4"
-  },
-  "switchBtn": {
-    "message": "Switch"
+  "accountCountLabel": {
+    "message": "Number of accounts:"
   },
   "clickToChange": {
     "message": "Click to customize shortcut"

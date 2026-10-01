@@ -1,43 +1,64 @@
 /**
  * Fast Google Account Switcher - Content Script
- * Lắng nghe các phím tắt tùy biến do người dùng tự cài đặt trên trang Google
+ * Lắng nghe phím tắt theo số lượng tài khoản đã cấu hình
  */
 
 const extApi = typeof browser !== "undefined" ? browser : chrome;
 
-const DEFAULT_SHORTCUTS = {
-  "0": "Alt+Shift+1",
-  "1": "Alt+Shift+2",
-  "2": "Alt+Shift+3",
-  "3": "Alt+Shift+4"
-};
+let accountCount = 4;
+let customShortcuts = {};
+let activeShortcuts = {};
 
-let activeShortcuts = { ...DEFAULT_SHORTCUTS };
+function rebuildShortcuts() {
+  const result = {};
+  for (let i = 0; i < accountCount; i++) {
+    if (i < 9) {
+      result[i.toString()] = `Alt+Shift+${i + 1}`;
+    }
+  }
+  if (customShortcuts) {
+    for (const [k, v] of Object.entries(customShortcuts)) {
+      result[k] = v;
+    }
+  }
+  activeShortcuts = result;
+}
 
-function loadShortcuts() {
+function loadConfig() {
   if (extApi.storage && extApi.storage.local) {
-    extApi.storage.local.get("customShortcuts", (data) => {
-      if (data && data.customShortcuts) {
-        activeShortcuts = { ...DEFAULT_SHORTCUTS, ...data.customShortcuts };
+    extApi.storage.local.get(["accountCount", "customShortcuts"], (data) => {
+      if (data) {
+        if (typeof data.accountCount === "number") {
+          accountCount = Math.max(1, Math.min(20, data.accountCount));
+        }
+        if (data.customShortcuts) {
+          customShortcuts = data.customShortcuts;
+        }
       }
+      rebuildShortcuts();
     });
+  } else {
+    rebuildShortcuts();
   }
 }
 
-loadShortcuts();
+loadConfig();
 
-// Cập nhật phím tắt tức thời khi người dùng vừa đổi trong popup
+// Cập nhật khi người dùng đổi số lượng tài khoản hoặc đổi phím tắt
 if (extApi.storage && extApi.storage.onChanged) {
   extApi.storage.onChanged.addListener((changes, area) => {
-    if (area === "local" && changes.customShortcuts) {
-      activeShortcuts = { ...DEFAULT_SHORTCUTS, ...changes.customShortcuts.newValue };
+    if (area === "local") {
+      if (changes.accountCount) {
+        accountCount = changes.accountCount.newValue;
+      }
+      if (changes.customShortcuts) {
+        customShortcuts = changes.customShortcuts.newValue || {};
+      }
+      rebuildShortcuts();
     }
   });
 }
 
-/**
- * Chuyển đổi phím bấm thành chuỗi tổ hợp (ví dụ: "Alt+1", "Ctrl+Shift+G", "F2")
- */
 function getEventKeyCombo(e) {
   const parts = [];
   if (e.ctrlKey) parts.push("Ctrl");
@@ -55,14 +76,12 @@ function getEventKeyCombo(e) {
   return parts.join("+");
 }
 
-// Bắt sự kiện keydown ở Capture phase (true) để không bị Gmail / Google Docs nuốt phím
 window.addEventListener(
   "keydown",
   (e) => {
     const target = e.target;
     const tag = (target.tagName || "").toLowerCase();
 
-    // Không kích hoạt khi đang gõ chữ trong ô input, textarea, hoặc soạn văn bản
     if (
       tag === "input" ||
       tag === "textarea" ||

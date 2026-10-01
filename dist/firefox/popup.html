@@ -17,69 +17,21 @@
       <span class="status-badge" id="current-badge" data-i18n="detecting">Đang kiểm tra...</span>
     </header>
 
-    <!-- Quick Switch Section -->
-    <section class="section">
-      <div class="account-grid">
-        <div class="account-row" data-index="0">
-          <button type="button" class="account-btn" data-index="0">
-            <span class="avatar">0</span>
-            <span class="label" data-i18n="defaultUser">Người dùng 0 (Mặc định)</span>
-          </button>
-          <button type="button" class="key-badge-btn" data-key-index="0" data-i18n-title="clickToChange" title="Bấm để đổi phím tắt">
-            <kbd class="key-badge">Alt+Shift+1</kbd>
-          </button>
-        </div>
-
-        <div class="account-row" data-index="1">
-          <button type="button" class="account-btn" data-index="1">
-            <span class="avatar">1</span>
-            <span class="label" data-user-index="1">Người dùng 1</span>
-          </button>
-          <button type="button" class="key-badge-btn" data-key-index="1" data-i18n-title="clickToChange" title="Bấm để đổi phím tắt">
-            <kbd class="key-badge">Alt+Shift+2</kbd>
-          </button>
-        </div>
-
-        <div class="account-row" data-index="2">
-          <button type="button" class="account-btn" data-index="2">
-            <span class="avatar">2</span>
-            <span class="label" data-user-index="2">Người dùng 2</span>
-          </button>
-          <button type="button" class="key-badge-btn" data-key-index="2" data-i18n-title="clickToChange" title="Bấm để đổi phím tắt">
-            <kbd class="key-badge">Alt+Shift+3</kbd>
-          </button>
-        </div>
-
-        <div class="account-row" data-index="3">
-          <button type="button" class="account-btn" data-index="3">
-            <span class="avatar">3</span>
-            <span class="label" data-user-index="3">Người dùng 3</span>
-          </button>
-          <button type="button" class="key-badge-btn" data-key-index="3" data-i18n-title="clickToChange" title="Bấm để đổi phím tắt">
-            <kbd class="key-badge">Alt+Shift+4</kbd>
-          </button>
-        </div>
+    <!-- Configure Number of Accounts -->
+    <div class="account-count-bar">
+      <label for="account-count-input" class="count-label" data-i18n="accountCountLabel">Số lượng tài khoản:</label>
+      <div class="stepper">
+        <button type="button" class="stepper-btn" id="dec-count" aria-label="Decrease">−</button>
+        <input type="number" id="account-count-input" class="count-input" min="1" max="20" value="4">
+        <button type="button" class="stepper-btn" id="inc-count" aria-label="Increase">+</button>
       </div>
-    </section>
+    </div>
 
-    <!-- Custom Number Input Section -->
-    <section class="section custom-section">
-      <form id="custom-form" class="custom-form">
-        <label for="custom-index" class="form-label" data-i18n="customInputLabel">Nhập số người dùng khác:</label>
-        <div class="input-row">
-          <input
-            type="number"
-            id="custom-index"
-            class="native-input"
-            min="0"
-            max="99"
-            data-i18n-placeholder="customInputPlaceholder"
-            placeholder="Ví dụ: 4"
-            required
-          />
-          <button type="submit" class="native-btn primary" id="custom-submit-btn" data-i18n="switchBtn">Chuyển</button>
-        </div>
-      </form>
+    <!-- Dynamic Account List Section -->
+    <section class="section">
+      <div class="account-grid" id="account-grid">
+        <!-- Rendered dynamically by popup.js -->
+      </div>
     </section>
 
     <!-- Footer -->
