@@ -27,6 +27,9 @@
   --record-bg: #fce8e6;
   --record-text: #c5221f;
   --record-border: #d93025;
+  --cycle-bg: #eef3fc;
+  --cycle-border: #d2e3fc;
+  --cycle-text: #174ea6;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -58,6 +61,9 @@
     --record-bg: #3c1e1e;
     --record-text: #f28b82;
     --record-border: #ea4335;
+    --cycle-bg: #1c2b42;
+    --cycle-border: #294269;
+    --cycle-text: #aecbfa;
   }
 }
 
@@ -81,7 +87,7 @@ body {
   padding: 14px 16px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 /* Header */
@@ -192,6 +198,45 @@ body {
   margin: 0;
 }
 
+/* Cycle Bar */
+.cycle-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.cycle-action-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--cycle-border);
+  border-radius: 8px;
+  background-color: var(--cycle-bg);
+  color: var(--cycle-text);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 12.5px;
+}
+
+.cycle-action-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.cycle-action-btn:hover .cycle-icon {
+  transform: rotate(90deg);
+}
+
+.cycle-icon {
+  transition: transform 0.25s ease;
+  flex-shrink: 0;
+}
+
 /* Account Grid */
 .section {
   display: flex;
@@ -202,7 +247,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  max-height: 280px;
+  max-height: 250px;
   overflow-y: auto;
   padding-right: 2px;
 }

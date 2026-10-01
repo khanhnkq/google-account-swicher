@@ -4,9 +4,6 @@
 
 const extApi = typeof browser !== "undefined" ? browser : chrome;
 
-/**
- * Kiểm tra xem hostname có thuộc hệ sinh thái Google hay không
- */
 function isGoogleDomain(hostname) {
   return (
     hostname === "google.com" ||
@@ -16,9 +13,6 @@ function isGoogleDomain(hostname) {
   );
 }
 
-/**
- * Tính toán URL mới với index tài khoản mong muốn
- */
 function getTargetGoogleUrl(rawUrl, targetIndex) {
   try {
     const url = new URL(rawUrl);
@@ -27,20 +21,20 @@ function getTargetGoogleUrl(rawUrl, targetIndex) {
       return null;
     }
 
-    // 1. Trường hợp URL đã có path dạng /u/0/, /u/1/...
+    // 1. URL có path /u/0/, /u/1/...
     const uRegex = /\/u\/\d+(\/|$)/;
     if (uRegex.test(url.pathname)) {
       url.pathname = url.pathname.replace(uRegex, `/u/${targetIndex}$1`);
       return url.toString();
     }
 
-    // 2. Trường hợp query param authuser đã tồn tại
+    // 2. Query param authuser
     if (url.searchParams.has("authuser")) {
       url.searchParams.set("authuser", targetIndex.toString());
       return url.toString();
     }
 
-    // 3. Trường hợp các dịch vụ chưa có /u/ trong path
+    // 3. Các dịch vụ chưa có /u/ trong path
     if (url.hostname === "mail.google.com") {
       url.pathname = url.pathname.replace(/^\/mail(\/|$)/, `/mail/u/${targetIndex}/`);
       return url.toString();
@@ -76,17 +70,12 @@ function getTargetGoogleUrl(rawUrl, targetIndex) {
   }
 }
 
-/**
- * Thực hiện chuyển tab hiện tại sang tài khoản targetIndex
- */
 async function switchActiveTabAccount(targetIndex) {
   try {
     const tabs = await extApi.tabs.query({ active: true, currentWindow: true });
-    if (!tabs || tabs.length === 0) return;
+    if (!tabs || tabs.length === 0 || !tabs[0].url) return;
 
     const activeTab = tabs[0];
-    if (!activeTab.url) return;
-
     const newUrl = getTargetGoogleUrl(activeTab.url, targetIndex);
     if (newUrl && newUrl !== activeTab.url) {
       await extApi.tabs.update(activeTab.id, { url: newUrl });
@@ -96,8 +85,53 @@ async function switchActiveTabAccount(targetIndex) {
   }
 }
 
-// Bắt sự kiện phím tắt trình duyệt (commands) cho switch-to-0..8
+/**
+ * Xoay vòng tài khoản (Cycle between accounts: 0 -> 1 -> 2 -> ... -> 0)
+ */
+async function cycleAccount(step = 1) {
+  try {
+    const tabs = await extApi.tabs.query({ active: true, currentWindow: true });
+    if (!tabs || tabs.length === 0 || !tabs[0].url) return;
+
+    const activeTab = tabs[0];
+    const currentUrl = activeTab.url;
+    const parsed = new URL(currentUrl);
+    if (!isGoogleDomain(parsed.hostname)) return;
+
+    // Lấy số lượng tài khoản đã cấu hình (mặc định 4)
+    let count = 4;
+    if (extApi.storage && extApi.storage.local) {
+      const data = await extApi.storage.local.get("accountCount");
+      if (data && typeof data.accountCount === "number") {
+        count = Math.max(1, Math.min(20, data.accountCount));
+      }
+    }
+
+    // Xác định index hiện tại
+    let currentIndex = 0;
+    const uMatch = parsed.pathname.match(/\/u\/(\d+)(\/|$)/);
+    if (uMatch) {
+      currentIndex = parseInt(uMatch[1], 10);
+    } else if (parsed.searchParams.has("authuser")) {
+      currentIndex = parseInt(parsed.searchParams.get("authuser"), 10) || 0;
+    }
+
+    const nextIndex = (currentIndex + step + count) % count;
+    const newUrl = getTargetGoogleUrl(currentUrl, nextIndex);
+    if (newUrl && newUrl !== currentUrl) {
+      await extApi.tabs.update(activeTab.id, { url: newUrl });
+    }
+  } catch (err) {
+    console.error("[Account Switcher] Error cycling account:", err);
+  }
+}
+
+// Bắt sự kiện phím tắt trình duyệt (commands)
 extApi.commands.onCommand.addListener((command) => {
+  if (command === "cycle-next") {
+    cycleAccount(1);
+    return;
+  }
   const match = command.match(/^switch-to-(\d+)$/);
   if (match) {
     const idx = parseInt(match[1], 10);
@@ -113,9 +147,14 @@ extApi.runtime.onMessage.addListener((message, sender, sendResponse) => {
     });
     return true;
   }
+  if (message.action === "cycle") {
+    cycleAccount(message.step || 1).then(() => {
+      sendResponse({ status: "ok" });
+    });
+    return true;
+  }
 });
 
-// Tự động nạp content.js vào các tab Google đang mở để nhận phím tắt ngay lập tức
 function injectContentScriptToOpenTabs() {
   extApi.tabs.query({ url: ["*://*.google.com/*", "*://*.youtube.com/*"] }, (tabs) => {
     if (!tabs) return;

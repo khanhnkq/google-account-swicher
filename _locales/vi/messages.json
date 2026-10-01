@@ -38,6 +38,12 @@
   "accountCountLabel": {
     "message": "Số lượng tài khoản:"
   },
+  "cycleNext": {
+    "message": "Tài khoản kế tiếp"
+  },
+  "cycleNextHint": {
+    "message": "Chuyển sang tài khoản tiếp theo"
+  },
   "clickToChange": {
     "message": "Bấm để đổi phím tắt"
   },
@@ -50,6 +56,7 @@
   "shortcutHint": {
     "message": "Bấm vào ô phím tắt để gán bất kỳ phím nào"
   },
+  "shortcutCmdCycle": { "message": "Chuyển sang tài khoản tiếp theo" },
   "shortcutCmd0": { "message": "Chuyển sang Người dùng 0" },
   "shortcutCmd1": { "message": "Chuyển sang Người dùng 1" },
   "shortcutCmd2": { "message": "Chuyển sang Người dùng 2" },

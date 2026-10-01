@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Build script for Google Account Switcher v1.2.1
+Build script for Google Account Switcher v1.3.0
 Outputs production-ready zip / xpi packages for Chrome Web Store and Firefox Add-ons (AMO).
-Supports up to 9 native browser commands + content script handling.
+Supports account cycle button, cycle shortcut, dynamic account count, and custom shortcut recorder.
 """
 
 import json
@@ -41,7 +41,15 @@ CONTENT_SCRIPTS_CONFIG = [
 ]
 
 # Firefox supports suggested_key for all commands
-FIREFOX_COMMANDS = {}
+FIREFOX_COMMANDS = {
+    "cycle-next": {
+        "suggested_key": {
+            "default": "Alt+Shift+S",
+            "mac": "Alt+Shift+S"
+        },
+        "description": "__MSG_shortcutCmdCycle__"
+    }
+}
 for i in range(9):
     FIREFOX_COMMANDS[f"switch-to-{i}"] = {
         "suggested_key": {
@@ -52,12 +60,21 @@ for i in range(9):
     }
 
 # Chrome allows at most 4 commands with suggested_key
-CHROME_COMMANDS = {}
+CHROME_COMMANDS = {
+    "cycle-next": {
+        "suggested_key": {
+            "default": "Alt+Shift+S",
+            "mac": "Alt+Shift+S"
+        },
+        "description": "__MSG_shortcutCmdCycle__"
+    }
+}
 for i in range(9):
     cmd_def = {
         "description": f"__MSG_shortcutCmd{i}__"
     }
-    if i < 4:
+    # Chrome allows 3 more suggested keys (1 used by cycle-next)
+    if i < 3:
         cmd_def["suggested_key"] = {
             "default": f"Alt+Shift+{i + 1}",
             "mac": f"Alt+Shift+{i + 1}"
@@ -118,7 +135,7 @@ def build_chrome():
         "manifest_version": 3,
         "default_locale": "en",
         "name": "__MSG_extensionName__",
-        "version": "1.2.1",
+        "version": "1.3.0",
         "description": "__MSG_extensionDescription__",
         "permissions": ["tabs", "storage"],
         "content_scripts": CONTENT_SCRIPTS_CONFIG,
@@ -137,7 +154,7 @@ def build_chrome():
     with open(os.path.join(CHROME_DIST, "manifest.json"), "w", encoding="utf-8") as f:
         json.dump(manifest, f, indent=2, ensure_ascii=False)
 
-    chrome_zip = os.path.join(DIST_DIR, "google-account-switcher-chrome-v1.2.1.zip")
+    chrome_zip = os.path.join(DIST_DIR, "google-account-switcher-chrome-v1.3.0.zip")
     create_zip(CHROME_DIST, chrome_zip)
 
 
@@ -153,7 +170,7 @@ def build_firefox():
         "manifest_version": 3,
         "default_locale": "en",
         "name": "__MSG_extensionName__",
-        "version": "1.2.1",
+        "version": "1.3.0",
         "description": "__MSG_extensionDescription__",
         "browser_specific_settings": {
             "gecko": {
@@ -178,15 +195,15 @@ def build_firefox():
     with open(os.path.join(FIREFOX_DIST, "manifest.json"), "w", encoding="utf-8") as f:
         json.dump(manifest, f, indent=2, ensure_ascii=False)
 
-    firefox_zip = os.path.join(DIST_DIR, "google-account-switcher-firefox-v1.2.1.zip")
-    firefox_xpi = os.path.join(DIST_DIR, "google-account-switcher-firefox-v1.2.1.xpi")
+    firefox_zip = os.path.join(DIST_DIR, "google-account-switcher-firefox-v1.3.0.zip")
+    firefox_xpi = os.path.join(DIST_DIR, "google-account-switcher-firefox-v1.3.0.xpi")
     create_zip(FIREFOX_DIST, firefox_zip)
     shutil.copy2(firefox_zip, firefox_xpi)
     print(f"📦 Created package: {firefox_xpi}")
 
 
 def main():
-    print("🚀 Starting build process v1.2.1...")
+    print("🚀 Starting build process v1.3.0...")
     os.makedirs(DIST_DIR, exist_ok=True)
     generate_icons()
     build_chrome()

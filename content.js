@@ -1,6 +1,6 @@
 /**
  * Fast Google Account Switcher - Content Script
- * Lắng nghe phím tắt theo số lượng tài khoản đã cấu hình
+ * Lắng nghe phím tắt chuyển tài khoản và phím tắt xoay vòng (cycle)
  */
 
 const extApi = typeof browser !== "undefined" ? browser : chrome;
@@ -16,6 +16,10 @@ function rebuildShortcuts() {
       result[i.toString()] = `Alt+Shift+${i + 1}`;
     }
   }
+
+  // Phím tắt xoay vòng (cycle) mặc định là Alt+Shift+S
+  result["cycle"] = "Alt+Shift+S";
+
   if (customShortcuts) {
     for (const [k, v] of Object.entries(customShortcuts)) {
       result[k] = v;
@@ -58,9 +62,6 @@ if (extApi.storage && extApi.storage.onChanged) {
   });
 }
 
-/**
- * Chuẩn hóa phím bấm (khắc phục lỗi Shift+5 thành % trên bàn phím chuẩn)
- */
 function getNormalizedKey(e) {
   if (e.code) {
     const digitMatch = e.code.match(/^Digit([0-9])$/);
@@ -119,8 +120,17 @@ window.addEventListener(
     const combo = getEventKeyCombo(e);
     if (!combo) return;
 
+    // 1. Kiểm tra phím tắt xoay vòng (cycle)
+    if (activeShortcuts["cycle"] && activeShortcuts["cycle"].toLowerCase() === combo.toLowerCase()) {
+      e.preventDefault();
+      e.stopPropagation();
+      extApi.runtime.sendMessage({ action: "cycle", step: 1 });
+      return;
+    }
+
+    // 2. Kiểm tra phím tắt theo số thứ tự tài khoản
     for (const [accIndex, shortcut] of Object.entries(activeShortcuts)) {
-      if (shortcut && shortcut.toLowerCase() === combo.toLowerCase()) {
+      if (accIndex !== "cycle" && shortcut && shortcut.toLowerCase() === combo.toLowerCase()) {
         e.preventDefault();
         e.stopPropagation();
         extApi.runtime.sendMessage({

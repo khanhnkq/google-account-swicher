@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "default_locale": "en",
   "name": "__MSG_extensionName__",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "description": "__MSG_extensionDescription__",
   "browser_specific_settings": {
     "gecko": {
@@ -50,6 +50,13 @@
     "128": "icons/icon-128.png"
   },
   "commands": {
+    "cycle-next": {
+      "suggested_key": {
+        "default": "Alt+Shift+S",
+        "mac": "Alt+Shift+S"
+      },
+      "description": "__MSG_shortcutCmdCycle__"
+    },
     "switch-to-0": {
       "suggested_key": {
         "default": "Alt+Shift+1",

@@ -1,6 +1,8 @@
 const extApi = typeof browser !== "undefined" ? browser : chrome;
 
 const DEFAULT_COUNT = 4;
+const DEFAULT_CYCLE_SHORTCUT = "Alt+Shift+S";
+
 let accountCount = DEFAULT_COUNT;
 let customShortcuts = {};
 let recordingIndex = null;
@@ -19,6 +21,12 @@ function applyStaticLocalization() {
     const key = el.getAttribute("data-i18n");
     const msg = t(key);
     if (msg) el.textContent = msg;
+  });
+
+  document.querySelectorAll("[data-i18n-title]").forEach((el) => {
+    const key = el.getAttribute("data-i18n-title");
+    const msg = t(key);
+    if (msg) el.setAttribute("title", msg);
   });
 }
 
@@ -50,6 +58,13 @@ function getShortcutForIndex(index) {
   return getDefaultShortcut(index);
 }
 
+function getCycleShortcut() {
+  if (customShortcuts["cycle"] !== undefined) {
+    return customShortcuts["cycle"];
+  }
+  return DEFAULT_CYCLE_SHORTCUT;
+}
+
 async function triggerSwitch(targetIndex) {
   try {
     await extApi.runtime.sendMessage({
@@ -59,6 +74,25 @@ async function triggerSwitch(targetIndex) {
     window.close();
   } catch (err) {
     console.error("[Popup] Switch error:", err);
+  }
+}
+
+async function triggerCycle() {
+  try {
+    await extApi.runtime.sendMessage({
+      action: "cycle",
+      step: 1
+    });
+    window.close();
+  } catch (err) {
+    console.error("[Popup] Cycle error:", err);
+  }
+}
+
+function updateCycleBadge() {
+  const badge = document.getElementById("cycle-key-badge");
+  if (badge) {
+    badge.textContent = getCycleShortcut();
   }
 }
 
@@ -192,7 +226,11 @@ function startRecording(btn, indexStr) {
   function stopRecording() {
     window.removeEventListener("keydown", onKeyDown, true);
     btn.classList.remove("recording");
-    renderAccountGrid();
+    if (indexStr === "cycle") {
+      updateCycleBadge();
+    } else {
+      renderAccountGrid();
+    }
     recordingIndex = null;
   }
 
@@ -214,6 +252,8 @@ async function loadData() {
   if (countInput) {
     countInput.value = accountCount.toString();
   }
+
+  updateCycleBadge();
 }
 
 function setAccountCount(newCount) {
@@ -237,6 +277,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const decBtn = document.getElementById("dec-count");
   const incBtn = document.getElementById("inc-count");
   const resetBtn = document.getElementById("reset-shortcuts-btn");
+  const cycleActionBtn = document.getElementById("cycle-action-btn");
+  const cycleKeyBtn = document.getElementById("cycle-key-btn");
 
   // 1. Quét trạng thái tab hiện tại
   try {
@@ -266,7 +308,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   // 2. Render danh sách tài khoản
   renderAccountGrid();
 
-  // 3. Tương tác Stepper số lượng tài khoản
+  // 3. Tương tác Nút Cycle (Xoay vòng tài khoản)
+  if (cycleActionBtn) {
+    cycleActionBtn.addEventListener("click", triggerCycle);
+  }
+  if (cycleKeyBtn) {
+    cycleKeyBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      startRecording(cycleKeyBtn, "cycle");
+    });
+  }
+
+  // 4. Tương tác Stepper số lượng tài khoản
   if (decBtn) {
     decBtn.addEventListener("click", () => setAccountCount(accountCount - 1));
   }
@@ -281,13 +334,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // 4. Khôi phục phím gốc
+  // 5. Khôi phục phím gốc
   if (resetBtn) {
     resetBtn.addEventListener("click", () => {
       customShortcuts = {};
       if (extApi.storage && extApi.storage.local) {
         extApi.storage.local.remove("customShortcuts");
       }
+      updateCycleBadge();
       renderAccountGrid();
     });
   }

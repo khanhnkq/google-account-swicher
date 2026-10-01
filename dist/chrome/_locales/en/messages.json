@@ -38,6 +38,12 @@
   "accountCountLabel": {
     "message": "Number of accounts:"
   },
+  "cycleNext": {
+    "message": "Next Account"
+  },
+  "cycleNextHint": {
+    "message": "Cycle to next account"
+  },
   "clickToChange": {
     "message": "Click to customize shortcut"
   },
@@ -50,6 +56,7 @@
   "shortcutHint": {
     "message": "Click on any shortcut badge to rebind it."
   },
+  "shortcutCmdCycle": { "message": "Cycle to next account" },
   "shortcutCmd0": { "message": "Switch to User 0" },
   "shortcutCmd1": { "message": "Switch to User 1" },
   "shortcutCmd2": { "message": "Switch to User 2" },
